@@ -56,7 +56,7 @@ function toggleTableButtons () {
 
 function joinTable () {
 	if(APP.tableName && APP.playerName) {
-		socket.emit("join", APP.playerName, APP.tableName, (dealerName) => {
+		socket.emit("join", APP.playerName, APP.tableName, dealerName => {
 			console.log("joined table, dealer is: " + dealerName);
 			DOM.tableName.innerHTML = APP.tableName;
 			DOM.playerName.innerHTML = APP.playerName;
@@ -70,13 +70,14 @@ function leaveTable () {
 	socket.emit("leave", () => {
 		console.log("leaving table");
 		APP.tableName = "";
-		APP.table = {};
 		DOM.tableName.innerHTML = "";
-		DOM.playerName.innerHTML = "";
-		DOM.gameCards.innerHTML = "";
-		DOM.playerCards.innerHTML = "";
-		DOM.bdealer.innerHTML = "";
+		
+		APP.table = {};
 		DOM.bplayer.innerHTML = "";
+		DOM.bdealer.innerHTML = "";
+		DOM.messages.innerHTML = "";
+
+		renderTable(APP.table);
 		toggleTableButtons();
 	});
 }
@@ -166,7 +167,7 @@ function createPlayerButtons () {
 function message (message) {
 	let m = document.createElement("p");	
 	m.innerHTML = message;
-	DOM.messages.appendChild(m);
+	DOM.messages.prepend(m);
 }
 
 socket.on("message", message);
@@ -204,11 +205,12 @@ socket.on("winner", winner => {
 });
 
 socket.on("end hand", dealerName => {
-	DOM.bplayer.innerHTML = "";
-	DOM.messages.innerHTML = "";
-	message("Dealer button moves to " + dealerName);
 	APP.table = {};
+	DOM.bplayer.innerHTML = "";
+	DOM.bdealer.innerHTML = "";
+	
 	renderTable(APP.table);
+	message("Dealer button moves to " + dealerName);
 	if(APP.playerName === dealerName) createDealerButtons();
 });
 

@@ -73,23 +73,17 @@ io.on("connection", socket => {
 		t.join(p);
 		socket.join(t.name)
 		io.to(t.name).emit("player joined", p.name);
-		console.log(socket.id, p.name, "joining", t.name);
 		next(t.players[t.button].name);
 	});
 
 	socket.on("leave", next => {
-		t.leave(p.name);
-		io.to(t.name).emit("player left", p.name, socket.id);
-		socket.leave(t.name);
-		console.log(socket.id, "leaving", t.name);
-		if(t.players.length === 0) t.button = 0;
+		leave(p, t, socket);
 		next();
 	});
 
 	socket.on("disconnect", () => {
-		//cleanup
 		console.log("socket disconnected: " + socket.id);
-		if(t.players && t.players.length === 0) t.button = 0;
+		if(t.players) leave(p, t, socket);
 	});
 
 	socket.on("error", error => {
@@ -97,9 +91,8 @@ io.on("connection", socket => {
 	});
 
 	socket.on("deal", () => {
-		t.deal(t);
+		t.deal();
 		for(let i = 0; i < t.players.length; i++) {
-			console.log(t.players[i]);
 			io.to(t.players[i].socketid).emit("hand", t.players[i].hand);
 		}
 	});
@@ -138,6 +131,17 @@ io.on("connection", socket => {
 		console.log(event, args);
 	});
 });
+
+function leave (player, table, socket) {
+	if(table.leave(player.name)) {
+		if(table.players.length) {
+			io.to(table.name).emit("end hand", table.players[table.button].name);
+		}
+		else delete poker.tables[table.name];
+	}
+	socket.leave(table.name);
+	io.to(table.name).emit("player left", player.name);
+}
 
 function init (next) {
 	//timer

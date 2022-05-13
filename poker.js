@@ -40,57 +40,65 @@ const tables = {};
 class Table {
 	constructor (tableName) {
 		this.name = tableName;
-		this.players = [];
+		this.players = [];	
 		this.round = 0;
 		this.button = 0;
+
 		this.reset();
 		tables.tableName = this;
 	}
 
-	join (player) {
-		if(this.players.find(p => p.name === player.name)) {
-			console.log("player already exists: " + player.name + " [poker.js]");
-			return 0;
-		}
-		else {
-			console.log(player.name + " has joined table " + this.name + " [poker.js]");
-			this.players.push(player);
-			return 1;	
-		}
-	}
-
-	leave (name) {
-		for(let i = 0; i < this.players.length; i++) {
-			if(this.players[i].name === name) {
-				console.log(name + " has left the table" + i + " [poker.js]");
-				this.players.splice(i, 1);
-				return 1;
-			}
-		}
-		return 0;
-	}
-
 	reset () {
-		this.deck = [];
 		this.cards = [];
 		this.best = [];
 		this.winner = [];
-		
+		this.deck = shuffleDeck(cards);
+
 		//reset player hands
 		for(let i = 0; i < this.players.length; i++) {
 			this.players[i].hand = [];
 		}
 	}
 
+	join (player) {
+		if(this.players.find(p => p.name === player.name)) {
+			console.log("[poker.js] player already exists: " + player.name);
+			return 0;
+		}
+		else {
+			console.log("[poker.js] " + player.name + " has joined table " + this.name);
+			this.players.push(player);
+			return 1;
+		}
+	}
+
+	leave (name) {
+		let dealer = false;
+		for(let i = 0; i < this.players.length; i++) {
+			if(this.players[i].name === name) {
+				this.players.splice(i, 1);
+				if(this.button === i) {
+					console.log("[poker.js] dealer is leaving, button: " + this.button);
+					this.button--;
+					this.nextRound();
+					dealer = true;
+				}
+				else if(this.button > i) {
+					this.button--;
+				}
+				console.log("[poker.js] " + name + " has left the table, player index: " + i);
+			}
+		}
+		return dealer;
+	}
+
 	nextRound () {
+		this.reset();
 		this.round++;
 		this.button = (this.button + 1) % this.players.length;
 	}
 
 	deal () {
-		this.reset();
-		this.deck = shuffleDeck(cards);
-
 		for(let i = 1; i <= this.players.length; i++) {
 			this.players[(this.button+i) % this.players.length].hand = drawHand(this.deck, 2);
 		}
