@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pocket Poker</title>
+<meta name="description" content="Pocket Poker is a Texas Hold'em poker game that uses javascript and websockets.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link href="/client.css" rel="stylesheet">
+<script src="/socket.io/socket.io.js"></script>
+<script src="/client.js" async defer></script>
+</head>
+<body>
+<div id="header">
+	<div id="info">
+		<h3>Name: <span id="playerName"></span><input type="text" id="playerInput" /></h3>
+		<h3>Table: <span id="tableName"></span><input type="text" id="tableInput" /></h3>
+	</div>
+</div>
+<div id="main">
+	<div class="row">
+		<div id="buttons" class="column">
+			<button id="join">
+				Join Table
+			</button>
+			<button id="leave" hidden>
+				Leave Table
+			</button>
+			<button id="show" hidden>
+				Show Cards
+			</button>
+		</div>
+	</div>
+	<div class="row">
+		<div id="bdealer" class="column"></div>
+	</div>
+	<div id="table">
+		<div class="row">
+			<div id="gameCards" class="column"></div>
+		</div>
+		<div class="row">
+			<div id="playerCards" class="column"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div id="bplayer" class="column"></div>
+	</div>
+</div>
+<div class="row">
+	<div class="column">
+		<h3 id="messages"></h3>
+	</div>
+</div>
+</body>
+</html>
