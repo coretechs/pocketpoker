@@ -9,13 +9,13 @@ input {
   background-color: #333333;
   border-radius: 2px;
   border: none;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 label {
   float: left;
   width: 4rem;
-  padding-right: 0.5rem;
+  font-size: 0.9rem;
 }
 
 p {
@@ -51,8 +51,8 @@ button {
 
 #footer {
   background-color: #333333;
-  height: 25vh;
-  max-height: 25vh;
+  height: 23vh;
+  max-height: 23vh;
   overflow: hidden;
 }
 
