@@ -2,6 +2,7 @@ body {
   color: white;
   background-color: #000000;
   font-family: monospace, "Courier New", Courier;
+  font-size: 0.9rem;
 }
 
 input {
@@ -9,13 +10,13 @@ input {
   background-color: #333333;
   border-radius: 2px;
   border: none;
-  font-size: 0.9rem;
+  margin-top: 0.1rem;
+  margin-bottom: 0.1rem;
 }
 
 label {
   float: left;
   width: 4rem;
-  font-size: 0.9rem;
   display: flex;
   align-items: center;
 }
@@ -46,8 +47,8 @@ button {
   background-color: darkgreen;
   display: flex;
   flex-wrap: wrap;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   width: 100%;
 }
 
@@ -71,13 +72,10 @@ button {
   display: flex;
   justify-content: left;
   width: 100%;
-  padding-top: .1rem;
-  padding-bottom: .1rem;
 }
 
 .column {
   flex: 20%;
-  padding: .1rem;
 }
 
 #gameCards, #playerCards {  
