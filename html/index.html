@@ -12,24 +12,23 @@
 <body>
 <div id="header">
 	<div id="info">
-		<div class="row"><label for="playerInput">Name:</label><input type="text" id="playerInput" /><span id="playerName"></span></div>
-		<div class="row"><label for="tableInput">Table:</label><input type="text" id="tableInput" /><span id="tableName"></span></div>
+		<div class="row">
+			<div class="column">
+				<div class="row"><label for="playerInput">Name:</label><input type="text" id="playerInput" /><span id="playerName"></span></div>
+				<div class="row"><label for="tableInput">Table:</label><input type="text" id="tableInput" /><span id="tableName"></span></div>
+			</div>
+			<div id="buttons" class="column">
+				<button id="join">
+					Join Table
+				</button>
+				<button id="leave" hidden>
+					Leave Table
+				</button>
+			</div>
+		</div>
 	</div>
 </div>
 <div id="main">
-	<div class="row">
-		<div id="buttons" class="column">
-			<button id="join">
-				Join Table
-			</button>
-			<button id="leave" hidden>
-				Leave Table
-			</button>
-			<button id="show" hidden>
-				Show Cards
-			</button>
-		</div>
-	</div>
 	<div class="row">
 		<div id="bdealer" class="column"></div>
 	</div>

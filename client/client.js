@@ -17,7 +17,6 @@ const DOM = {
 	buttons: document.getElementById("buttons"),
 	bdealer: document.getElementById("bdealer"),
 	bplayer: document.getElementById("bplayer"),
-	show: document.getElementById("show"),
 	gameCards: document.getElementById("gameCards"),
 	playerCards: document.getElementById("playerCards")
 };
@@ -29,10 +28,6 @@ DOM.join.onclick = () => {
 	APP.playerName = DOM.playerInput.value;
 	APP.tableName = DOM.tableInput.value;
 	joinTable();
-};
-
-DOM.show.onclick = () => {
-	showCards();
 };
 
 DOM.leave.onclick = () => {
