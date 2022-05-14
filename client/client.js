@@ -78,6 +78,16 @@ function reset () {
 	showInputButtons(true);
 }
 
+function endHand (dealerName) {
+	APP.table = {};
+	DOM.bplayer.innerHTML = "";
+	DOM.bdealer.innerHTML = "";
+	
+	renderTable(APP.table);
+	message("Dealer button moves to " + dealerName);
+	if(APP.playerName === dealerName) createDealerButtons();
+}
+
 function joinTable () {
 	if(APP.tableName && APP.playerName) {
 		socket.emit("join", APP.playerName, APP.tableName, dealerName => {
@@ -199,15 +209,10 @@ socket.on("player left", player => {
 	message(player + " left");
 });
 
-socket.on("seat", playerName => {
-	APP.playerName = playerName;
-	DOM.playerName.innerHTML = APP.playerName;
-});
-
 socket.on("hand", hand => {
-	createPlayerButtons();
 	APP.table.hand = hand;
 	renderTable(APP.table);
+	createPlayerButtons();
 });
 
 socket.on("cards", cards => {
@@ -220,13 +225,7 @@ socket.on("winner", winner => {
 });
 
 socket.on("end hand", dealerName => {
-	APP.table = {};
-	DOM.bplayer.innerHTML = "";
-	DOM.bdealer.innerHTML = "";
-	
-	renderTable(APP.table);
-	message("Dealer button moves to " + dealerName);
-	if(APP.playerName === dealerName) createDealerButtons();
+	endHand(dealerName);
 });
 
 socket.on("disconnect", () => {
