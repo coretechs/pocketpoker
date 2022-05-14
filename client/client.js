@@ -108,7 +108,7 @@ function leaveTable () {
 }
 
 function renderTable (table) {
-	DOM.table.hidden = true;
+	//DOM.table.hidden = true;
 	DOM.gameCards.innerHTML = "";
 	DOM.playerCards.innerHTML = "";
 
@@ -130,7 +130,7 @@ function renderTable (table) {
 		DOM.playerCards.appendChild(h2);
 	}
 
-	DOM.table.hidden = false;
+	//DOM.table.hidden = false;
 }
 
 function createDealerButton (name, cb) {

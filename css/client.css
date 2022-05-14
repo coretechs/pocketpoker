@@ -56,6 +56,11 @@ button {
   width: 100%;
 }
 
+#table {
+  margin-left: 0.1rem;
+  margin-right: 0.1rem;
+}
+
 #footer {
   background-color: #333333;
   height: 20vh;
@@ -69,7 +74,6 @@ button {
   height: 3rem;
   flex-direction: row;
 }
-
 
 .row {
   display: flex;
@@ -87,5 +91,5 @@ button {
 }
 
 #gameCards, #playerCards {  
-  height: 100px;
+  height: 96px;
 }
