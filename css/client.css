@@ -25,7 +25,8 @@ p {
 }
 
 button {
-  margin-right: 0.3rem;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
   height: 2rem;
 }
 
@@ -34,8 +35,8 @@ button {
 }
 
 #header {
-  height: 12vh;
-  max-height: 15vh;
+  height: 4rem;
+  max-height: 4rem;
   overflow: hidden;
 }
 
@@ -51,8 +52,12 @@ button {
 #footer {
   background-color: #333333;
   height: 25vh;
-  max-height: 30vh;
+  max-height: 25vh;
   overflow: hidden;
+}
+
+#bdealer, #bplayer {
+  height: 3rem;
 }
 
 .inputs {
