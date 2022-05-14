@@ -43,7 +43,6 @@ class Table {
 		this.players = [];	
 		this.round = 0;
 		this.button = 0;
-
 		this.reset();
 		tables.tableName = this;
 	}

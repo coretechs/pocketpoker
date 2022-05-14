@@ -100,12 +100,12 @@ io.on("connection", socket => {
 
 	socket.on("turn", () => {
 		t.turn();
-		io.to(t.name).emit("cards", t.cards);
+		io.to(t.name).emit("cards", [t.cards[3]]);
 	});
 
 	socket.on("river", () => {
 		t.river();
-		io.to(t.name).emit("cards", t.cards);
+		io.to(t.name).emit("cards", [t.cards[4]]);
 	});
 
 	socket.on("result", () => {

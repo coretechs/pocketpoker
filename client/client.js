@@ -1,7 +1,10 @@
 const APP = {
 	playerName: "",
 	tableName: "",
-	table: {},
+	table: {
+		cards: [],
+		hand: []
+	},
 	showCards: false
 };
 
@@ -41,7 +44,6 @@ DOM.tableInput.onkeyup = (event) => {
 	}
 };
 
-// pad number with leading 0
 function pad (num, size) {
     let s = num + "";
     while (s.length < size) s = "0" + s;
@@ -68,22 +70,24 @@ function reset () {
 	DOM.playerInput.value = "";
 	DOM.tableInput.value = "";
 	
-	
-	APP.table = {};
+	APP.table.cards = [];
+	APP.table.hand = [];
 	DOM.bplayer.innerHTML = "";
 	DOM.bdealer.innerHTML = "";
 	DOM.messages.innerHTML = "";
 
-	renderTable(APP.table);
+	DOM.gameCards.innerHTML = "";
+	DOM.playerCards.innerHTML = "";
 	showInputButtons(true);
 }
 
 function endHand (dealerName) {
-	APP.table = {};
+	APP.table.cards = [];
+	APP.table.hand = [];
 	DOM.bplayer.innerHTML = "";
 	DOM.bdealer.innerHTML = "";
-	
-	renderTable(APP.table);
+	DOM.gameCards.innerHTML = "";
+	DOM.playerCards.innerHTML = "";
 	message("Dealer button moves to " + dealerName);
 	if(APP.playerName === dealerName) createDealerButtons();
 }
@@ -107,31 +111,31 @@ function leaveTable () {
 	});
 }
 
-function renderTable (table) {
-	//DOM.table.hidden = true;
-	DOM.gameCards.innerHTML = "";
-	DOM.playerCards.innerHTML = "";
-
-	if(table.cards) {
-		for(let i = 0; i < table.cards.length; i++) {
+function renderCards (cards) {
+	if(cards) {
+		for(let i = 0; i < cards.length; i++) {
 			let c = document.createElement("img");
-			c.src = "images/" + table.cards[i] + ".png";
+			c.classList.add("fade-in-image");
+			c.src = "images/" + cards[i] + ".png";
 			DOM.gameCards.appendChild(c);
 		}
 	}
+}
 
-	if(table.hand) {
+function renderHand (hand) {
+	DOM.playerCards.innerHTML = "";
+	if(hand) {
 		let h1 = document.createElement("img"),
 			h2 = document.createElement("img");
-
-		h1.src = "images/" + (APP.showCards ? table.hand[0] : "b1fv") + ".png";
-		h2.src = "images/" + (APP.showCards ? table.hand[1] : "b1fv") + ".png";
+		h1.classList.add("fade-in-image");
+		h2.classList.add("fade-in-image");
+		h1.src = "images/" + (APP.showCards ? hand[0] : "b1fv") + ".png";
+		h2.src = "images/" + (APP.showCards ? hand[1] : "b1fv") + ".png";
 		DOM.playerCards.appendChild(h1);
 		DOM.playerCards.appendChild(h2);
 	}
-
-	//DOM.table.hidden = false;
 }
+
 
 function createDealerButton (name, cb) {
 	let b = document.createElement("button");
@@ -170,13 +174,13 @@ function createPlayerButtons () {
 		if(APP.showCards) {
 			APP.showCards = false;
 			b.innerHTML = "Show cards";
-			renderTable(APP.table);
+			renderHand(APP.table.hand);
 			
 		}
 		else {
 			APP.showCards = true;
 			b.innerHTML = "Hide cards";
-			renderTable(APP.table);
+			renderHand(APP.table.hand);
 		}
 	};
 
@@ -211,13 +215,13 @@ socket.on("player left", player => {
 
 socket.on("hand", hand => {
 	APP.table.hand = hand;
-	renderTable(APP.table);
+	renderHand(APP.table.hand);
 	createPlayerButtons();
 });
 
 socket.on("cards", cards => {
-	APP.table.cards = cards;
-	renderTable(APP.table);
+	APP.table.cards.concat(cards);
+	renderCards(cards);
 });
 
 socket.on("winner", winner => {
