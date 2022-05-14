@@ -70,7 +70,7 @@ button {
 
 .row {
   display: flex;
-  justify-content: left;
+  justify-content: space-between;
   width: 100%;
 }
 
