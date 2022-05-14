@@ -53,12 +53,29 @@ function getFormattedUTCTimestamp () {
     return pad(d.getUTCDate(), 2) + "-" + pad(d.getUTCMonth(),2) + "-" + d.getUTCFullYear().toString().slice(2) + " " + pad(d.getUTCHours(), 2) + ":" + pad(d.getUTCMinutes(), 2) + ":" + pad(d.getUTCSeconds(), 2);
 }
 
-function toggleTableButtons () {
+function showInputButtons (bool) {
+	DOM.playerInput.hidden = !bool;
+	DOM.tableInput.hidden = !bool;
+	DOM.join.hidden = !bool;
+	DOM.leave.hidden = bool;
+}
+
+function reset () {
+	APP.playerName = "";
+	APP.tableName = "";
+	DOM.playerName.innerHTML = "";
+	DOM.tableName.innerHTML = "";
+	DOM.playerInput.value = "";
 	DOM.tableInput.value = "";
-	DOM.playerInput.hidden = DOM.playerInput.hidden == true ? false : true;
-	DOM.tableInput.hidden = DOM.tableInput.hidden == true ? false : true;
-	DOM.join.hidden = DOM.join.hidden == true ? false : true;
-	DOM.leave.hidden = DOM.leave.hidden == false ? true : false;
+	
+	
+	APP.table = {};
+	DOM.bplayer.innerHTML = "";
+	DOM.bdealer.innerHTML = "";
+	DOM.messages.innerHTML = "";
+
+	renderTable(APP.table);
+	showInputButtons(true);
 }
 
 function joinTable () {
@@ -67,7 +84,7 @@ function joinTable () {
 			console.log("joined table, dealer is: " + dealerName);
 			DOM.tableName.innerHTML = APP.tableName;
 			DOM.playerName.innerHTML = APP.playerName;
-			toggleTableButtons();
+			showInputButtons(false);
 			if(APP.playerName === dealerName) createDealerButtons();
 		});
 	}
@@ -76,19 +93,7 @@ function joinTable () {
 function leaveTable () {
 	socket.emit("leave", () => {
 		console.log("leaving table");
-		APP.playerName = "";
-		APP.tableName = "";
-		DOM.playerName.innerHTML = "";
-		DOM.tableName.innerHTML = "";
-		
-		
-		APP.table = {};
-		DOM.bplayer.innerHTML = "";
-		DOM.bdealer.innerHTML = "";
-		DOM.messages.innerHTML = "";
-
-		renderTable(APP.table);
-		toggleTableButtons();
+		reset();
 	});
 }
 
@@ -222,6 +227,10 @@ socket.on("end hand", dealerName => {
 	renderTable(APP.table);
 	message("Dealer button moves to " + dealerName);
 	if(APP.playerName === dealerName) createDealerButtons();
+});
+
+socket.on("disconnect", () => {
+	reset();
 });
 
 socket.onAny((event, ...args) => {

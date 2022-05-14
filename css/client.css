@@ -31,6 +31,7 @@ button {
   margin-left: 0.2rem;
   margin-right: 0.2rem;
   height: 2rem;
+  align-items: center;
 }
 
 #join, #leave {

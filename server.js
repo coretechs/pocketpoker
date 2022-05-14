@@ -54,36 +54,32 @@ io.on("connection", socket => {
 	
 	let t = {};
 
-	//global socket list
-	const users = [];
-	for (let [id] of io.of("/").sockets) {
-		users.push(id);
-	}
-	console.log(users.length + " socket(s) connected");
-	console.log(users);
-	io.emit("users", users);
+	updateUsers();
 	
 	socket.on("join", (playerName, tableName, next) => {
+		console.log("socket joining: " + socket.id, playerName, tableName);
 		p.name = playerName;
 		if(poker.tables[tableName]) t = poker.tables[tableName];
 		else {
 			t = new poker.Table(tableName);
 			poker.tables[tableName] = t;
 		}
-		t.join(p);
-		socket.join(t.name)
-		io.to(t.name).emit("player joined", p.name);
-		next(t.players[t.button].name);
+		if(t.join(p)) {
+			socket.join(t.name)
+			io.to(t.name).emit("player joined", p.name);
+			next(t.players[t.button].name);
+		}
 	});
 
 	socket.on("leave", next => {
-		leave(p, t, socket);
+		console.log("socket leaving: " + socket.id);
+		if(t.players && t.players.length) leave(p, t, socket);
 		next();
 	});
 
 	socket.on("disconnect", () => {
 		console.log("socket disconnected: " + socket.id);
-		if(t.players) leave(p, t, socket);
+		if(t.players && t.players.length) leave(p, t, socket);
 	});
 
 	socket.on("error", error => {
@@ -131,6 +127,17 @@ io.on("connection", socket => {
 		console.log(event, args);
 	});
 });
+
+function updateUsers () {
+	//global socket list
+	let users = [];
+	for (let [id] of io.of("/").sockets) {
+		users.push(id);
+	}
+	console.log(users.length + " socket(s) connected");
+	console.log(users);
+	io.emit("users", users);
+}
 
 function leave (player, table, socket) {
 	if(table.leave(player.name)) {

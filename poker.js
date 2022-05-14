@@ -62,11 +62,11 @@ class Table {
 
 	join (player) {
 		if(this.players.find(p => p.name === player.name)) {
-			console.log("[poker.js] player already exists: " + player.name);
+			log("player already exists: " + player.name);
 			return 0;
 		}
 		else {
-			console.log("[poker.js] " + player.name + " has joined table " + this.name);
+			log(player.name + " has joined table " + this.name);
 			this.players.push(player);
 			return 1;
 		}
@@ -78,7 +78,7 @@ class Table {
 			if(this.players[i].name === name) {
 				this.players.splice(i, 1);
 				if(this.button === i) {
-					console.log("[poker.js] dealer is leaving, button: " + this.button);
+					log("dealer is leaving, button index: " + this.button);
 					this.button--;
 					this.nextRound();
 					dealer = true;
@@ -86,7 +86,7 @@ class Table {
 				else if(this.button > i) {
 					this.button--;
 				}
-				console.log("[poker.js] " + name + " has left the table, player index: " + i);
+				log( + name + " has left the table, player index: " + i);
 			}
 		}
 		return dealer;
@@ -152,6 +152,10 @@ class Player {
 		this.name = name;
 		this.hand = [];
 	}
+}
+
+function log (msg) {
+	console.log("[poker.js] " + msg);
 }
 
 function shuffleDeck (deck) {
