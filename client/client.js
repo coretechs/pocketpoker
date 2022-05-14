@@ -49,9 +49,8 @@ function pad (num, size) {
 }
 
 function getFormattedUTCTimestamp () {
-    let months = { 1:"Jan", 2:"Feb", 3:"Mar", 4:"Apr", 5:"May", 6:"Jun", 7:"Jul", 8:"Aug", 9:"Sep", 10:"Oct", 11:"Nov", 12:"Dec" };
     let d = new Date();
-    return pad(d.getUTCDate(), 2) + "-" + months[d.getUTCMonth() + 1] + "-" + d.getUTCFullYear() + " " + pad(d.getUTCHours(), 2) + ":" + pad(d.getUTCMinutes(), 2) + ":" + pad(d.getUTCSeconds(), 2) + " UTC";
+    return pad(d.getUTCDate(), 2) + "-" + pad(d.getUTCMonth(),2) + "-" + d.getUTCFullYear().toString().slice(2) + " " + pad(d.getUTCHours(), 2) + ":" + pad(d.getUTCMinutes(), 2) + ":" + pad(d.getUTCSeconds(), 2);
 }
 
 function toggleTableButtons () {

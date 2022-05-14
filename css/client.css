@@ -19,6 +19,7 @@ label {
 }
 
 p {
+  font-size: 0.8rem;
   margin-top: 0.1rem;
   margin-bottom: 0.1rem;
 }
@@ -32,13 +33,12 @@ button {
 }
 
 #header {
-  height: 10vh;
+  height: 12vh;
   max-height: 15vh;
   overflow: hidden;
 }
 
 #main {
-  height: 40vh;
   background-color: darkgreen;
   display: flex;
   flex-wrap: wrap;
