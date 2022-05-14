@@ -46,6 +46,19 @@ DOM.tableInput.onkeyup = (event) => {
 	}
 };
 
+// pad number with leading 0
+function pad (num, size) {
+    let s = num + "";
+    while (s.length < size) s = "0" + s;
+    return s;
+}
+
+function getFormattedUTCTimestamp () {
+    let months = { 1:"Jan", 2:"Feb", 3:"Mar", 4:"Apr", 5:"May", 6:"Jun", 7:"Jul", 8:"Aug", 9:"Sep", 10:"Oct", 11:"Nov", 12:"Dec" };
+    let d = new Date();
+    return pad(d.getUTCDate(), 2) + "-" + months[d.getUTCMonth() + 1] + "-" + d.getUTCFullYear() + " " + pad(d.getUTCHours(), 2) + ":" + pad(d.getUTCMinutes(), 2) + ":" + pad(d.getUTCSeconds(), 2) + " UTC";
+}
+
 function toggleTableButtons () {
 	DOM.tableInput.value = "";
 	DOM.playerInput.hidden = DOM.playerInput.hidden == true ? false : true;
@@ -69,8 +82,11 @@ function joinTable () {
 function leaveTable () {
 	socket.emit("leave", () => {
 		console.log("leaving table");
+		APP.playerName = "";
 		APP.tableName = "";
+		DOM.playerName.innerHTML = "";
 		DOM.tableName.innerHTML = "";
+		
 		
 		APP.table = {};
 		DOM.bplayer.innerHTML = "";
@@ -166,7 +182,7 @@ function createPlayerButtons () {
 
 function message (message) {
 	let m = document.createElement("p");	
-	m.innerHTML = message;
+	m.innerHTML = "[" + getFormattedUTCTimestamp() + "] " + message;
 	DOM.messages.prepend(m);
 }
 

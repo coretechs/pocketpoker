@@ -1,14 +1,57 @@
+body {
+  color: white;
+  background-color: #000000;
+  font-family: monospace, "Courier New", Courier;
+}
+
+input {
+    color: white;
+    background-color: #333333;
+    border-radius: 2px;
+    border: none;
+    font-size: 1rem;
+}
+
+label {
+    float: left;
+    padding-right: 0.5rem;
+}
+
+#header {
+  height: 15vh;
+  max-height: 15vh;
+  overflow: hidden;
+}
+
+#main {
+    background-color: darkgreen;
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    width: 100%;
+}
+
+#footer {
+  background-color: #333333;
+  height: 30vh;
+  max-height: 30vh;
+  overflow: hidden;
+}
+
 .row {
   display: flex;
-  justify-content: center;
+  justify-content: left;
+  width: 100%;
+  padding-top: .1em;
+  padding-bottom: .1em;
 }
 
 .column {
-  flex: 33.33%;
-  padding: 5px;
+  flex: 20%;
+  padding: .1em;
 }
-#gameCards, #playerCards {
-  /*background-color: darkgreen;*/
-  padding-top: 1em;
-  padding-bottom: 1em;
+
+#gameCards, #playerCards {  
+  height: 100px;
 }

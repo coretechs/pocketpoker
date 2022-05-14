@@ -12,8 +12,8 @@
 <body>
 <div id="header">
 	<div id="info">
-		<h3>Name: <span id="playerName"></span><input type="text" id="playerInput" /></h3>
-		<h3>Table: <span id="tableName"></span><input type="text" id="tableInput" /></h3>
+		<h4><label for="playerInput">Name:</label><span id="playerName"></span><input type="text" id="playerInput" /></h4>
+		<h4><label for="tableInput">Table:</label><span id="tableName"></span><input type="text" id="tableInput" /></h4>
 	</div>
 </div>
 <div id="main">
@@ -33,21 +33,25 @@
 	<div class="row">
 		<div id="bdealer" class="column"></div>
 	</div>
-	<div id="table">
-		<div class="row">
-			<div id="gameCards" class="column"></div>
-		</div>
-		<div class="row">
-			<div id="playerCards" class="column"></div>
+	<div class="row">
+		<div id="table">
+			<div class="row">
+				<div id="gameCards" class="column"></div>
+			</div>
+			<div class="row">
+				<div id="playerCards" class="column"></div>
+			</div>
 		</div>
 	</div>
 	<div class="row">
 		<div id="bplayer" class="column"></div>
 	</div>
 </div>
-<div class="row">
-	<div class="column">
-		<h3 id="messages"></h3>
+<div id="footer">
+	<div class="row">
+		<div class="column">
+			<div id="messages"></div>
+		</div>
 	</div>
 </div>
 </body>

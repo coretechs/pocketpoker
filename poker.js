@@ -124,16 +124,25 @@ class Table {
 
 	result () {
 		for(let i = 0; i < this.players.length; i++) {
-			let set = this.players[i].hand.concat(this.cards),
-				all = getCombos(set),
-				ranks = [];
-			for(let j = 0; j < all.length; j++) {
-				ranks.push(rankHand(all[j]));
+			if(this.players[i].hand.length) {
+				let set = this.players[i].hand.concat(this.cards),
+					all = getCombos(set),
+					ranks = [];
+				for(let j = 0; j < all.length; j++) {
+					ranks.push(rankHand(all[j]));
+				}
+				this.best.push(bestRank(ranks)[0]);
 			}
-			this.best.push(bestRank(ranks)[0]);
 		}
 		this.winner = bestRank(this.best);
-		this.winner.push(this.players[this.winner[1]].name);
+		console.log(this.winner);
+		if(this.winner[1] === -1) {
+			this.winner[0] = [ "folding hands", []];
+			this.winner.push("Nobody");
+		}
+		else {
+			this.winner.push(this.players[this.winner[1]].name);
+		}
 	}
 }
 
