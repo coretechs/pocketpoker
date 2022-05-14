@@ -135,7 +135,7 @@ class Table {
 			}
 		}
 		this.winner = bestRank(this.best);
-		console.log(this.winner);
+		
 		if(this.winner[1] === -1) {
 			this.winner[0] = [ "folding hands", []];
 			this.winner.push("Nobody");
