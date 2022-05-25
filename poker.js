@@ -85,7 +85,7 @@ class Table {
 				else if(this.button > i) {
 					this.button--;
 				}
-				log( + name + " has left the table, player index: " + i);
+				log(name + " has left the table, player index: " + i);
 			}
 		}
 		return dealer;

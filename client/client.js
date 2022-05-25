@@ -12,7 +12,6 @@ const DOM = {
 	playerName: document.getElementById("playerName"),
 	playerInput: document.getElementById("playerInput"),
 	tableName: document.getElementById("tableName"),
-	tableInput: document.getElementById("tableInput"),
 	table: document.getElementById("table"),
 	messages: document.getElementById("messages"),
 	join: document.getElementById("join"),
@@ -29,19 +28,11 @@ const socket = io(URL, { autoConnect: true });
 
 DOM.join.onclick = () => {
 	APP.playerName = DOM.playerInput.value;
-	APP.tableName = DOM.tableInput.value;
 	joinTable();
 };
 
 DOM.leave.onclick = () => {
 	leaveTable();
-};
-
-DOM.tableInput.onkeyup = (event) => {
-	if(event.keyCode === 13) {
-		event.preventDefault();
-		DOM.join.click();
-	}
 };
 
 function pad (num, size) {
@@ -52,12 +43,11 @@ function pad (num, size) {
 
 function getFormattedUTCTimestamp () {
     let d = new Date();
-    return pad(d.getUTCDate(), 2) + "-" + pad(d.getUTCMonth(),2) + "-" + d.getUTCFullYear().toString().slice(2) + " " + pad(d.getUTCHours(), 2) + ":" + pad(d.getUTCMinutes(), 2) + ":" + pad(d.getUTCSeconds(), 2);
+    return d.getUTCFullYear().toString().slice(2) + "-" + pad(d.getUTCMonth() + 1,2) + "-" + pad(d.getUTCDate(), 2) + " " + pad(d.getUTCHours(), 2) + ":" + pad(d.getUTCMinutes(), 2) + ":" + pad(d.getUTCSeconds(), 2);
 }
 
 function showInputButtons (bool) {
 	DOM.playerInput.hidden = !bool;
-	DOM.tableInput.hidden = !bool;
 	DOM.join.hidden = !bool;
 	DOM.leave.hidden = bool;
 }
@@ -68,7 +58,6 @@ function reset () {
 	DOM.playerName.innerHTML = "";
 	DOM.tableName.innerHTML = "";
 	DOM.playerInput.value = "";
-	DOM.tableInput.value = "";
 	
 	APP.table.cards = [];
 	APP.table.hand = [];
@@ -93,9 +82,10 @@ function endHand (dealerName) {
 }
 
 function joinTable () {
-	if(APP.tableName && APP.playerName) {
-		socket.emit("join", APP.playerName, APP.tableName, dealerName => {
-			console.log("joined table, dealer is: " + dealerName);
+	if(APP.playerName) {
+		socket.emit("join", APP.playerName, APP.tableName, (tableName, dealerName) => {
+			console.log("joined table, dealer is: " + dealerName + ", table is: " + tableName);
+			APP.tableName = tableName;
 			DOM.tableName.innerHTML = APP.tableName;
 			DOM.playerName.innerHTML = APP.playerName;
 			showInputButtons(false);

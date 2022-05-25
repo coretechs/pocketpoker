@@ -57,6 +57,7 @@ io.on("connection", socket => {
 	updateUsers();
 	
 	socket.on("join", (playerName, tableName, next) => {
+		if(tableName == "") tableName = "House Table";
 		console.log("socket joining: " + socket.id, playerName, tableName);
 		p.name = playerName;
 		if(poker.tables[tableName]) t = poker.tables[tableName];
@@ -67,7 +68,7 @@ io.on("connection", socket => {
 		if(t.join(p)) {
 			socket.join(t.name)
 			io.to(t.name).emit("player joined", p.name);
-			next(t.players[t.button].name);
+			next(tableName, t.players[t.button].name);
 		}
 	});
 

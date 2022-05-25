@@ -35,11 +35,26 @@ button {
 
 #info {
   flex-direction: column;
-  align-items: left;
+}
+
+#buttons {
+  align-items: flex-start;
+  margin: auto;
+}
+
+#links {
+  align-items: flex-start;
+  margin-left: auto;
+}
+
+#playerBox {
+  background-color: #999999;
+  display: block;
 }
 
 #join, #leave {
-  height: 3rem;
+  height: 4rem;
+  width:  4rem;
 }
 
 #header {
@@ -59,14 +74,27 @@ button {
 #table {
   margin-left: 0.2rem;
   margin-right: 0.2rem;
+  width: 100%;
+}
+
+#gameCards, #playerCards {
+  height: 96px;
+}
+
+#gameCards {
+  justify-content: center;
+}
+
+#messages {
+  height: 25vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: #333333;
+  display: block;  
 }
 
 #footer {
-  background-color: #333333;
-  height: 20vh;
-  max-height: 20vh;
   border-radius: 4px;
-  overflow: hidden;
   margin-top: 0.2rem;
 }
 
@@ -75,25 +103,27 @@ button {
   flex-direction: row;
 }
 
+.tinyCard {
+  width: 36px;
+  height: 48px;
+}
+
 .row {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   justify-content: left;
   width: 100%;
+  height: 100%;
 }
 
 .column {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  flex: 20%;
+  height: 100%;
 }
 
-#gameCards, #playerCards {
-  height: 96px;
-}
-
+/* Fade-in animation for images */
 .fade-in-image {
   animation: fadeIn 0.5s;
   -webkit-animation: fadeIn 0.5s;
@@ -124,4 +154,7 @@ button {
 @-ms-keyframes fadeIn {
   0% {opacity:0;}
   100% {opacity:1;}
+}
+
+@media only screen and (max-width: 640px) {
 }
