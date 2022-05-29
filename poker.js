@@ -269,6 +269,7 @@ function bestRank (ranks) {
 		
 		compareScore(i, handRanks[rank], handRanks[best[0]], () => {
 			switch(rank) {
+				case "Fold":
 				case "High card":
 				case "Straight":
 				case "Flush":

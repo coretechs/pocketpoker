@@ -16,9 +16,8 @@ const DOM = {
 	messages: document.getElementById("messages"),
 	join: document.getElementById("join"),
 	leave: document.getElementById("leave"),
-	buttons: document.getElementById("buttons"),
-	bdealer: document.getElementById("bdealer"),
-	bplayer: document.getElementById("bplayer"),
+	dealerButtons: document.getElementById("dealerButtons"),
+	playerButtons: document.getElementById("playerButtons"),
 	gameCards: document.getElementById("gameCards"),
 	playerCards: document.getElementById("playerCards")
 };
@@ -61,8 +60,8 @@ function reset () {
 	
 	APP.table.cards = [];
 	APP.table.hand = [];
-	DOM.bplayer.innerHTML = "";
-	DOM.bdealer.innerHTML = "";
+	DOM.playerButtons.innerHTML = "";
+	DOM.dealerButtons.innerHTML = "";
 	DOM.messages.innerHTML = "";
 
 	DOM.gameCards.innerHTML = "";
@@ -73,8 +72,8 @@ function reset () {
 function endHand (dealerName) {
 	APP.table.cards = [];
 	APP.table.hand = [];
-	DOM.bplayer.innerHTML = "";
-	DOM.bdealer.innerHTML = "";
+	DOM.playerButtons.innerHTML = "";
+	DOM.dealerButtons.innerHTML = "";
 	DOM.gameCards.innerHTML = "";
 	DOM.playerCards.innerHTML = "";
 	message("Dealer button moves to " + dealerName);
@@ -132,10 +131,10 @@ function createDealerButton (name, cb) {
 	b.innerHTML = name.toUpperCase();
 	b.onclick = () => {
 		socket.emit(name, () => {});
-		DOM.bdealer.removeChild(b);
+		DOM.dealerButtons.removeChild(b);
 		cb();
 	};
-	DOM.bdealer.appendChild(b);
+	DOM.dealerButtons.appendChild(b);
 }
 
 function createDealerButtons () {
@@ -176,11 +175,11 @@ function createPlayerButtons () {
 
 	f.onclick = () => {
 		socket.emit("fold");
-		DOM.bplayer.removeChild(f);
+		DOM.playerButtons.removeChild(f);
 	};
 
-	DOM.bplayer.appendChild(b);
-	DOM.bplayer.appendChild(f);
+	DOM.playerButtons.appendChild(b);
+	DOM.playerButtons.appendChild(f);
 }
 
 function message (message) {

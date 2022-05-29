@@ -30,37 +30,10 @@ p {
 button {
   margin-left: 0.2rem;
   margin-right: 0.2rem;
-  height: 2rem;
-}
-
-#info {
-  flex-direction: column;
-}
-
-#buttons {
-  align-items: flex-start;
-  margin: auto;
-}
-
-#links {
-  align-items: flex-start;
-  margin-left: auto;
-}
-
-#playerBox {
-  background-color: #999999;
-  display: block;
-}
-
-#join, #leave {
-  height: 4rem;
-  width:  4rem;
+  min-height: 2rem;
 }
 
 #header {
-  height: 5rem;
-  max-height: 5rem;
-  overflow: hidden;
 }
 
 #main {
@@ -71,18 +44,39 @@ button {
   width: 100%;
 }
 
+#footer {
+  border-radius: 4px;
+  margin-top: 0.2rem;
+}
+
+#info {
+  flex-direction: column;
+}
+
+#links {
+  align-items: flex-start;
+  margin-left: auto;
+}
+
 #table {
   margin-left: 0.2rem;
   margin-right: 0.2rem;
   width: 100%;
 }
 
-#gameCards, #playerCards {
-  height: 96px;
+#playerBox {
+  background-color: #999999;
+  display: block;
 }
 
-#gameCards {
-  justify-content: center;
+#playerList {
+  background-color: #555555;
+  width: 100%;
+  display: block;
+}
+
+#gameCards, #playerCards {
+  height: 96px;
 }
 
 #messages {
@@ -93,12 +87,7 @@ button {
   display: block;  
 }
 
-#footer {
-  border-radius: 4px;
-  margin-top: 0.2rem;
-}
-
-#bdealer, #bplayer {
+#dealerButtons, #playerButtons {
   height: 3rem;
   flex-direction: row;
 }
