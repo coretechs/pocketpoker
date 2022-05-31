@@ -139,6 +139,9 @@ class Table {
 			this.winner[0] = [ "folding hands", []];
 			this.winner.push("Nobody");
 		}
+		else if(this.winner[2] > 0) {
+			this.winner.push("Multiple players");
+		}
 		else {
 			this.winner.push(this.players[this.winner[1]].name);
 		}
