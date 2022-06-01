@@ -139,8 +139,12 @@ class Table {
 			this.winner[0] = [ "folding hands", []];
 			this.winner.push("Nobody");
 		}
-		else if(this.winner[2] > 0) {
-			this.winner.push("Multiple players");
+		else if(this.winner[2].length) {
+			let winners = this.players[this.winner[1]].name;
+			for(let i = 0; i < this.winner[2].length; i++) {
+				winners = winners.concat(", ", this.players[this.winner[2][i]].name);
+			}
+			this.winner.push(winners);
 		}
 		else {
 			this.winner.push(this.players[this.winner[1]].name);
@@ -277,20 +281,20 @@ function bestRank (ranks) {
 				case "Straight":
 				case "Flush":
 				case "Straight flush":
-					compareScore(i, score, best[1], () => ties.push(i + 1));
+					compareScore(i, score, best[1], () => ties.push(i));
 					break;
 				case "Pair":
 				case "Three of a kind":
 				case "Full house":
 				case "Four of a kind":
 					compareScore(i, score[0], best[1][0], () => 
-						compareScore(i, score[1], best[1][1], () => ties.push(i + 1))
+						compareScore(i, score[1], best[1][1], () => ties.push(i))
 					);
 					break;
 				case "Two pair":
 					compareScore(i, score[0], best[1][0], () => 
 						compareScore(i, score[1], best[1][1], () => 
-							compareScore(i, score[2], best[1][2], () => ties.push(i + 1))
+							compareScore(i, score[2], best[1][2], () => ties.push(i))
 						)
 					);
 					break;
@@ -323,15 +327,16 @@ module.exports = {
 	tables: tables
 };
 
+
 /*
 let t = new Table("12345");
-let p1 = new Player("dan");
-let p2 = new Player("bob");
-let p3 = new Player("jim");
-let p4 = new Player("sue");
-let p5 = new Player("cam");
-let p6 = new Player("jen");
-let p7 = new Player("bob");
+let p1 = new Player(0, "dan");
+let p2 = new Player(1, "bob");
+let p3 = new Player(2, "jim");
+let p4 = new Player(3, "sue");
+let p5 = new Player(4, "cam");
+let p6 = new Player(5, "jen");
+let p7 = new Player(6, "bob");
 
 t.join(p1);
 t.join(p2);
@@ -347,20 +352,23 @@ t.turn();
 t.river();
 t.result();
 console.log("%o",t);
-console.log( "Winner: \x1b[35m" + t.players[t.winner[1]].name + "\x1b[0m", "\nHand:", t.winner[0], t.players[t.winner[1]].hand, "\nTies:", t.winner[2]);
+console.log( "Winner: \x1b[35m" + t.winner[3] + "\x1b[0m", "\nHand:", t.winner[0], t.players[t.winner[1]].hand, "\nTies:", t.winner[2]);
 
 t.leave("bob");
+t.nextRound();
 
 t.deal();
 t.flop();
 t.turn();
 t.river();
 t.result();
+
 console.log("%o",t);
-console.log( "Winner: \x1b[35m" + t.players[t.winner[1]].name + "\x1b[0m", "\nHand:", t.winner[0], t.players[t.winner[1]].hand, "\nTies:", t.winner[2]);
+console.log( "Winner: \x1b[35m" + t.winner[3] + "\x1b[0m", "\nHand:", t.winner[0], t.players[t.winner[1]].hand, "\nTies:", t.winner[2]);
 
 t.join(p7);
 
+t.nextRound();
 t.deal();
 t.flop();
 t.turn();
@@ -368,10 +376,11 @@ t.river();
 t.result();
 
 console.log("%o",t);
-console.log( "Winner: \x1b[35m" + t.players[t.winner[1]].name + "\x1b[0m", "\nHand:", t.winner[0], t.players[t.winner[1]].hand, "\nTies:", t.winner[2]);
+console.log( "Winner: \x1b[35m" + t.winner[3] + "\x1b[0m", "\nHand:", t.winner[0], t.players[t.winner[1]].hand, "\nTies:", t.winner[2]);
 */
 
-/*const testHands = [
+/*
+let testHands = [
 	["2H", "4D", "TS", "9C", "QS"], // high card
 	["2H", "3D", "TS", "4C", "KS"], // high card
 	["7H", "2S", "4S", "4C", "TS"], // pair
@@ -403,8 +412,8 @@ for(let i = 0; i < testHands.length; i++) {
 }
 */
 
-
-/*const testRanks = [
+/*
+let testRanks = [
 	[ 'Two pair', [ 2048, 1024, 5 ]],
 	[ 'Two pair', [ 128, 64, 10]],
 	[ 'Two pair', [ 128, 64, 10]],
@@ -416,4 +425,16 @@ for(let i = 0; i < testHands.length; i++) {
 	//[ 'Three of a kind', [ 4096, 64 ]],
 	//[ 'Three of a kind', [ 64, 4096 ]]
 ]
-bestRank(testRanks);*/
+bestRank(testRanks);
+
+let testRanks2 = [
+    [ 'Two pair', [ 16, 8, 256 ]],
+    [ 'Two pair', [ 16, 2, 64 ]],
+    [ 'Pair', [ 16, 4640]],
+    [ 'Straight', 62 ],
+    [ 'Straight', 62 ],
+    [ 'Pair', [ 16, 5152]]
+  ];
+
+console.log(bestRank(testRanks2));
+*/
