@@ -30,6 +30,13 @@ DOM.join.onclick = () => {
 	joinTable();
 };
 
+DOM.playerInput.onkeydown = (e) => {
+	if (e.keyCode === 13) {
+		DOM.join.click();
+		e.preventDefault();
+	}
+};
+
 DOM.leave.onclick = () => {
 	leaveTable();
 };
@@ -54,6 +61,7 @@ function showInputButtons (bool) {
 function reset () {
 	APP.playerName = "";
 	APP.tableName = "";
+	APP.showCards = false;
 	DOM.playerName.innerHTML = "";
 	DOM.tableName.innerHTML = "";
 	DOM.playerInput.value = "";
@@ -151,8 +159,7 @@ function createDealerButtons () {
 	});
 }
 
-function createPlayerButtons () {
-	APP.showCards = false;
+function createPlayerButtons () {	
 	let b = document.createElement("button"),
 		f = document.createElement("button");
 
@@ -214,7 +221,7 @@ socket.on("cards", cards => {
 });
 
 socket.on("winner", winner => {
-	message(winner[3] + " wins with " + winner[0][0]);
+	message(winner[3] + (winner[2].length ? " each win with " : " wins with ") + winner[0][0]);
 });
 
 socket.on("end hand", dealerName => {

@@ -327,7 +327,6 @@ module.exports = {
 	tables: tables
 };
 
-
 /*
 let t = new Table("12345");
 let p1 = new Player(0, "dan");
@@ -353,7 +352,9 @@ t.river();
 t.result();
 console.log("%o",t);
 console.log( "Winner: \x1b[35m" + t.winner[3] + "\x1b[0m", "\nHand:", t.winner[0], t.players[t.winner[1]].hand, "\nTies:", t.winner[2]);
+*/
 
+/*
 t.leave("bob");
 t.nextRound();
 
@@ -410,9 +411,7 @@ for(let i = 0; i < testHands.length; i++) {
 	let r = rankHand(h);
 	console.log(h, r);
 }
-*/
 
-/*
 let testRanks = [
 	[ 'Two pair', [ 2048, 1024, 5 ]],
 	[ 'Two pair', [ 128, 64, 10]],
@@ -425,7 +424,7 @@ let testRanks = [
 	//[ 'Three of a kind', [ 4096, 64 ]],
 	//[ 'Three of a kind', [ 64, 4096 ]]
 ]
-bestRank(testRanks);
+console.log(bestRank(testRanks));
 
 let testRanks2 = [
     [ 'Two pair', [ 16, 8, 256 ]],
@@ -437,4 +436,25 @@ let testRanks2 = [
   ];
 
 console.log(bestRank(testRanks2));
+
+let set = [ "9C", "3S", "9D", "JD", "7D", "9H", "7H" ],
+	all = getCombos(set),
+	ranks = [];
+for(let j = 0; j < all.length; j++) {
+	ranks.push(rankHand(all[j]));
+}
+console.log(ranks);
+
+let winners = [ bestRank(ranks)[0] ];
+winners.push([ 'Two pair', [ 128, 32, 512 ] ])
+
+let winners2 = [[ 'Two pair', [ 128, 32, 512 ]]];
+winners2.push(bestRank(ranks)[0]);
+
+console.log(winners);
+console.log(winners2);
+
+console.log(bestRank(winners));
+console.log(bestRank(winners2));
+
 */
