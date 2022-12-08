@@ -6,6 +6,7 @@ const cards = [
 ];
 
 const handRanks = {
+	"Fold": 0,
 	"High card": 1,
 	"Pair": 2,
 	"Two pair": 3,
@@ -125,7 +126,7 @@ class Table {
 		for(let i = 0; i < this.players.length; i++) {
 			if(this.players[i].hand.length) {
 				let set = this.players[i].hand.concat(this.cards),
-					all = getCombos(set),
+					all = this.players[i].hand[0] == "Fold" ? [ this.players[i].hand ] : getCombos(set),
 					ranks = [];
 				for(let j = 0; j < all.length; j++) {
 					ranks.push(rankHand(all[j]));
@@ -135,7 +136,7 @@ class Table {
 		}
 		this.winner = bestRank(this.best);
 		
-		if(this.winner[1] === -1) {
+		if(this.winner[0][0] === "Fold") {
 			this.winner[0] = [ "folding hands", []];
 			this.winner.push("Nobody");
 		}
@@ -182,6 +183,7 @@ function drawHand (deck, cards) {
 
 function rankHand (hand) {
 	let handType = {
+		"Fold": 0,
 		"High card": 0,
 		"Pair": 0,
 		"Two pair": 0,
@@ -215,6 +217,8 @@ function rankHand (hand) {
 		"K": 0,
 		"A": 0
 	};
+
+	if(hand[0] == "Fold") return hand;
 
 	for(let i = 0; i < hand.length; i++) {
 		handType["High card"] += pointMap[hand[i][0]];

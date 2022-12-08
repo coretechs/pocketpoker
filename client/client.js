@@ -41,6 +41,17 @@ DOM.leave.onclick = () => {
 	leaveTable();
 };
 
+DOM.playerCards.onclick = () => {
+	if(APP.showCards) {
+		APP.showCards = false;
+		renderHand(APP.table.hand);
+	}
+	else {
+		APP.showCards = true;
+		renderHand(APP.table.hand);
+	}
+};
+
 function pad (num, size) {
     let s = num + "";
     while (s.length < size) s = "0" + s;
@@ -133,7 +144,6 @@ function renderHand (hand) {
 	}
 }
 
-
 function createDealerButton (name, cb) {
 	let b = document.createElement("button");
 	b.innerHTML = name.toUpperCase();
@@ -160,32 +170,15 @@ function createDealerButtons () {
 }
 
 function createPlayerButtons () {	
-	let b = document.createElement("button"),
-		f = document.createElement("button");
+	let	f = document.createElement("button");
 
-	b.innerHTML = "Show cards";
 	f.innerHTML = "Fold";
-
-	b.onclick = () => {
-		if(APP.showCards) {
-			APP.showCards = false;
-			b.innerHTML = "Show cards";
-			renderHand(APP.table.hand);
-			
-		}
-		else {
-			APP.showCards = true;
-			b.innerHTML = "Hide cards";
-			renderHand(APP.table.hand);
-		}
-	};
 
 	f.onclick = () => {
 		socket.emit("fold");
 		DOM.playerButtons.removeChild(f);
 	};
 
-	DOM.playerButtons.appendChild(b);
 	DOM.playerButtons.appendChild(f);
 }
 
@@ -221,7 +214,8 @@ socket.on("cards", cards => {
 });
 
 socket.on("winner", winner => {
-	message(winner[3] + (winner[2].length ? " each win with " : " wins with ") + winner[0][0]);
+	console.log(winner);
+	message(winner[3] + ((winner[2].length && winner[0][0] !== "folding hands") ? " each win with " : " wins with ") + winner[0][0]);
 });
 
 socket.on("end hand", dealerName => {
