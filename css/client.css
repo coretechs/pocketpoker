@@ -42,11 +42,15 @@ button {
   flex-wrap: wrap;
   border-radius: 4px;
   width: 100%;
+  margin-top: 0.1rem;
+}
+
+#player {
+    margin-top: 0.1rem;
 }
 
 #footer {
-  border-radius: 4px;
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
 }
 
 #info {
@@ -59,24 +63,26 @@ button {
 }
 
 #table {
-  margin-left: 0.2rem;
-  margin-right: 0.2rem;
   width: 100%;
 }
 
 #playerBox {
   background-color: #999999;
   display: block;
+  border-radius: 4px;
+  min-width: 150px;
 }
 
 #playerList {
   background-color: #555555;
+  border-radius: 4px;
   width: 100%;
   display: block;
 }
 
 #gameCards, #playerCards {
   height: 96px;
+  margin: 0.1rem;
 }
 
 #messages {
@@ -84,7 +90,8 @@ button {
   width: 100%;
   overflow: hidden;
   background-color: #333333;
-  display: block;  
+  display: block;
+  border-radius: 4px;
 }
 
 #dealerButtons, #playerButtons {
