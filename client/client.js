@@ -86,6 +86,7 @@ function reset () {
 	DOM.gameCards.innerHTML = "";
 	DOM.playerCards.innerHTML = "";
 	showInputButtons(true);
+	DOM.playerInput.focus();
 }
 
 function endHand (dealerName) {
@@ -229,3 +230,5 @@ socket.on("disconnect", () => {
 socket.onAny((event, ...args) => {
  	console.log(event, args);
 });
+
+DOM.playerInput.focus();
