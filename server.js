@@ -80,7 +80,7 @@ io.on("connection", socket => {
 
 	socket.on("disconnect", () => {
 		console.log("socket disconnected: " + socket.id);
-		//if(t.players && t.players.length) leave(p, t, socket);
+		if(t.players && t.players.length) leave(p, t, socket);
 	});
 
 	socket.on("error", error => {
