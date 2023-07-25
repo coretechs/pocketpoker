@@ -224,7 +224,7 @@ socket.on("end hand", dealerName => {
 });
 
 socket.on("disconnect", () => {
-	reset();
+	//reset();
 });
 
 socket.onAny((event, ...args) => {
