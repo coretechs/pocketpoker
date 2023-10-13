@@ -36,8 +36,6 @@ const pointMap = {
 
 const straights = [ 4111, 31, 62, 124, 248, 496, 992, 1984, 3968, 7936 ];
 
-const tables = {};
-
 class Table {
 	constructor (tableName) {
 		this.name = tableName;
@@ -45,7 +43,6 @@ class Table {
 		this.round = 0;
 		this.button = 0;
 		this.reset();
-		tables.tableName = this;
 	}
 
 	reset () {
@@ -327,8 +324,7 @@ function getCombos (arr) {
 
 module.exports = {
 	Table: Table,
-	Player: Player,
-	tables: tables
+	Player: Player
 };
 
 /*

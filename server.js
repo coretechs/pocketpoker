@@ -12,7 +12,8 @@ const 	compress = require("compression"),
 		app = express();
 
 const   VERSION = JSON.parse(fs.readFileSync("package.json")).version,
-		INSTANCE = VERSION + "_" + Date.now();
+		INSTANCE = VERSION + "_" + Date.now(),
+		TABLES = {};
 
 const 	server = http.createServer(app);
 const 	io = socketio(server, {
@@ -60,10 +61,10 @@ io.on("connection", socket => {
 		if(tableName == "") tableName = "House Table";
 		console.log("socket joining: " + socket.id, playerName, tableName);
 		p.name = playerName;
-		if(poker.tables[tableName]) t = poker.tables[tableName];
+		if(TABLES[tableName]) t = TABLES[tableName];
 		else {
 			t = new poker.Table(tableName);
-			poker.tables[tableName] = t;
+			TABLES[tableName] = t;
 		}
 		if(t.join(p)) {
 			socket.join(t.name)
@@ -145,7 +146,7 @@ function leave (player, table, socket) {
 		if(table.players.length) {
 			io.to(table.name).emit("end hand", table.players[table.button].name);
 		}
-		else delete poker.tables[table.name];
+		else delete TABLES[table.name];
 	}
 	socket.leave(table.name);
 	io.to(table.name).emit("player left", player.name);
