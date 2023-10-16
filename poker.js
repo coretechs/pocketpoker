@@ -46,6 +46,8 @@ class Table {
 	}
 
 	reset () {
+		// each round push [round,index,player,chips] where index is for sidepots (default 0)
+		this.pot = [];
 		this.cards = [];
 		this.best = [];
 		this.winner = [];
@@ -137,15 +139,15 @@ class Table {
 			this.winner[0] = [ "folding hands", []];
 			this.winner.push("Nobody");
 		}
-		else if(this.winner[2].length) {
-			let winners = this.players[this.winner[1]].name;
-			for(let i = 0; i < this.winner[2].length; i++) {
-				winners = winners.concat(", ", this.players[this.winner[2][i]].name);
+		else if(this.winner[1].length > 1) {
+			let winners = this.players[this.winner[1][0]].name;
+			for(let i = 1; i < this.winner[1].length; i++) {
+				winners = winners.concat(", ", this.players[this.winner[1][i]].name);
 			}
 			this.winner.push(winners);
 		}
 		else {
-			this.winner.push(this.players[this.winner[1]].name);
+			this.winner.push(this.players[this.winner[1][0]].name);
 		}
 	}
 }
@@ -302,7 +304,7 @@ function bestRank (ranks) {
 			}
 		});
 	}
-	return [best, number, ties];
+	return [best, ties.concat(number)];
 }
 
 function getCombos (arr) {
@@ -327,6 +329,7 @@ module.exports = {
 	Player: Player
 };
 
+
 /*
 let t = new Table("12345");
 let p1 = new Player(0, "dan");
@@ -335,7 +338,6 @@ let p3 = new Player(2, "jim");
 let p4 = new Player(3, "sue");
 let p5 = new Player(4, "cam");
 let p6 = new Player(5, "jen");
-let p7 = new Player(6, "bob");
 
 t.join(p1);
 t.join(p2);
@@ -343,7 +345,6 @@ t.join(p3);
 t.join(p4);
 t.join(p5);
 t.join(p6);
-t.join(p7);
 
 t.deal();
 t.flop();
@@ -351,10 +352,10 @@ t.turn();
 t.river();
 t.result();
 console.log("%o",t);
-console.log( "Winner: \x1b[35m" + t.winner[3] + "\x1b[0m", "\nHand:", t.winner[0], t.players[t.winner[1]].hand, "\nTies:", t.winner[2]);
+console.log( "Winner(s): \x1b[35m" + t.winner[2] + "\x1b[0m", "\nHand:", t.winner[0]);
 */
-
 /*
+
 t.leave("bob");
 t.nextRound();
 
@@ -365,7 +366,7 @@ t.river();
 t.result();
 
 console.log("%o",t);
-console.log( "Winner: \x1b[35m" + t.winner[3] + "\x1b[0m", "\nHand:", t.winner[0], t.players[t.winner[1]].hand, "\nTies:", t.winner[2]);
+console.log( "Winner(s): \x1b[35m" + t.winner[2] + "\x1b[0m", "\nHand:", t.winner[0]);
 
 t.join(p7);
 
@@ -377,8 +378,36 @@ t.river();
 t.result();
 
 console.log("%o",t);
-console.log( "Winner: \x1b[35m" + t.winner[3] + "\x1b[0m", "\nHand:", t.winner[0], t.players[t.winner[1]].hand, "\nTies:", t.winner[2]);
+console.log( "Winner(s): \x1b[35m" + t.winner[2] + "\x1b[0m", "\nHand:", t.winner[0]);
 */
+
+
+/*
+let t = new Table("12345");
+let p1 = new Player(0, "dan");
+let p2 = new Player(1, "bob");
+let p3 = new Player(2, "jim");
+let p4 = new Player(3, "sue");
+let p5 = new Player(4, "cam");
+let p6 = new Player(5, "jen");
+t.join(p1);
+t.join(p2);
+t.join(p3);
+t.join(p4);
+t.join(p5);
+t.join(p6);
+t.players[0].hand = ['TD','3S'];
+t.players[1].hand = [ 'JC', '5S'];
+t.players[2].hand = [ '7C', '7H'];
+t.players[3].hand = [ 'AH', '7D'];
+t.players[4].hand = [ '9D', '2H'];
+t.players[5].hand = [ '5H', '7S'];
+t.cards = ['9C', 'KD', '8D', 'TS', 'JS']
+t.result();
+console.log("%o",t);
+console.log( "Winner(s): \x1b[35m" + t.winner[2] + "\x1b[0m", "\nHand:", t.winner[0]);
+*/
+
 
 /*
 let testHands = [
@@ -451,10 +480,15 @@ winners.push([ 'Two pair', [ 128, 32, 512 ] ])
 let winners2 = [[ 'Two pair', [ 128, 32, 512 ]]];
 winners2.push(bestRank(ranks)[0]);
 
+let winners3 = [[ 'Full house', [ 128, 32 ]],[ 'Two pair', [ 128, 32, 512 ]],[ 'Full house', [ 128, 32 ]]];
+winners3.push(bestRank(ranks)[0]);
+
 console.log(winners);
 console.log(winners2);
+console.log(winners3);
 
 console.log(bestRank(winners));
 console.log(bestRank(winners2));
+console.log(bestRank(winners3));
 
 */

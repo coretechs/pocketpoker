@@ -216,7 +216,7 @@ socket.on("cards", cards => {
 
 socket.on("winner", winner => {
 	console.log(winner);
-	message(winner[3] + ((winner[2].length && winner[0][0] !== "folding hands") ? " each win with " : " wins with ") + winner[0][0]);
+	message(winner[2] + ((winner[1].length > 1 && winner[0][0] !== "folding hands") ? " each win with " : " wins with ") + winner[0][0]);
 });
 
 socket.on("end hand", dealerName => {
