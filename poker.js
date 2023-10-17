@@ -104,20 +104,24 @@ class Table {
 
 	bets () {
 		if(this.stage === 0) {
-			let small = this.players[(this.button-2) % this.players.length].bet(this.stage, this.sb),
-				big = this.players[(this.button-1) % this.players.length].bet(this.stage, this.bb);
+			console.log("a: ", (this.button + this.players.length -2) % this.players.length);
+			console.log("b: ", (this.button + this.players.length -1) % this.players.length);
+
+			let small = this.players[(this.button + this.players.length - 2) % this.players.length].bet(this.stage, this.sb),
+				big = this.players[(this.button + this.players.length - 1) % this.players.length].bet(this.stage, this.bb);
 			//if small.length > 0 && big.length > 0
 			//check if player is out of moneys
 			if(small.length && big.length) {
-				pot.push(small);
-				pot.push(big);
+				this.pot.push(small);
+				this.pot.push(big);
 			}
 		}
 		else {
 			for(let i = 1; i <= this.players.length; i++) {
-				let p = this.players[(this.button+i) % this.players.length],
-					bet = p.bet(this.stage, p.wager);
-				if(bet.length) pot.push(bet);
+				let p = this.players[(this.button+i) % this.players.length];
+				p.wager = 10;
+				let bet = p.bet(this.stage, p.wager);
+				if(bet.length) this.pot.push(bet);
 				p.wager = 0;
 			}
 		}
@@ -136,7 +140,7 @@ class Table {
 			split = total / this.winner[1].length;
 
 			for(let j = 0; j < this.winner[1].length; j++) {
-				this.player[this.winner[1][j]].chips += split;
+				this.players[this.winner[1][j]].chips += split;
 			}
 			this.stage = 0;
 		}
@@ -217,6 +221,7 @@ class Player {
 		if(amount <= this.chips) {
 			bet = [0, stage, this.name, amount];
 			this.chips -= amount;
+			console.log("subtracting ", amount, " from ", this.name);
 		}
 		return bet;
 	}
@@ -392,7 +397,7 @@ module.exports = {
 };
 
 
-/*
+
 let t = new Table("12345");
 let p1 = new Player(0, "dan");
 let p2 = new Player(1, "bob");
@@ -408,14 +413,28 @@ t.join(p4);
 t.join(p5);
 t.join(p6);
 
-t.deal();
-t.flop();
-t.turn();
-t.river();
-t.result();
-console.log("%o",t);
-console.log( "Winner(s): \x1b[35m" + t.winner[2] + "\x1b[0m", "\nHand:", t.winner[0]);
-*/
+for(let x = 0; x < 100; x++)
+{
+	t.bets();
+	t.deal();
+	t.bets();
+	t.flop();
+	t.bets();
+	t.turn();
+	t.bets();
+	t.river();
+	t.bets();
+	t.result();
+	t.payouts();
+	t.nextRound();
+}
+console.log("%o",t.players);
+let total = 0
+for(let x = 0; x < t.players.length; x++) {
+	total += t.players[x].chips;
+}
+console.log(total);
+
 /*
 
 t.leave("bob");
