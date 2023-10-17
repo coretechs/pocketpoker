@@ -108,8 +108,10 @@ class Table {
 				big = this.players[(this.button-1) % this.players.length].bet(this.stage, this.bb);
 			//if small.length > 0 && big.length > 0
 			//check if player is out of moneys
-			pot.push(small);
-			pot.push(big);
+			if(small.length && big.length) {
+				pot.push(small);
+				pot.push(big);
+			}
 		}
 		else {
 			for(let i = 1; i <= this.players.length; i++) {
@@ -120,6 +122,24 @@ class Table {
 			}
 		}
 		//pot good ops
+	}
+
+	payouts () {
+		let total = 0,
+			split = 0;
+
+		if(this.stage === 4) {
+			for(let i = 0; i < this.pot.length; i++) {
+				total += this.pot[i][3];
+			}
+			
+			split = total / this.winner[1].length;
+
+			for(let j = 0; j < this.winner[1].length; j++) {
+				this.player[this.winner[1][j]].chips += split;
+			}
+			this.stage = 0;
+		}
 	}
 
 	deal () {
@@ -178,6 +198,8 @@ class Table {
 		else {
 			this.winner.push(this.players[this.winner[1][0]].name);
 		}
+
+		this.payouts();
 	}
 }
 
