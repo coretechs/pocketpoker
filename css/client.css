@@ -12,6 +12,7 @@ input {
   border: none;
   margin-top: 0.1rem;
   margin-bottom: 0.1rem;
+  min-height: 1.8rem;
 }
 
 label {
@@ -64,8 +65,12 @@ button {
 
 #table {
   width: 100%;
+  justify-content: center;
 }
 
+#pot {
+  background-color: yellowgreen;
+}
 #playerBox {
   background-color: #999999;
   display: block;

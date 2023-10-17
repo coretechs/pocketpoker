@@ -42,11 +42,16 @@ class Table {
 		this.players = [];	
 		this.round = 0;
 		this.button = 0;
+		this.sb = 10;
+		this.bb = 25;
 		this.reset();
 	}
 
 	reset () {
-		// each round push [round,index,player,chips] where index is for sidepots (default 0)
+		// each stage push [index,stage,player,chips]
+		// index for sidepots (default 0)
+		// stage 0: blind, 1: deal, 2: flop, 3: turn, 4: river
+		this.stage = 0;
 		this.pot = [];
 		this.cards = [];
 		this.best = [];
@@ -97,28 +102,52 @@ class Table {
 		this.button = (this.button + 1) % this.players.length;
 	}
 
+	bets () {
+		if(this.stage === 0) {
+			let small = this.players[(this.button-2) % this.players.length].bet(this.stage, this.sb),
+				big = this.players[(this.button-1) % this.players.length].bet(this.stage, this.bb);
+			//if small.length > 0 && big.length > 0
+			//check if player is out of moneys
+			pot.push(small);
+			pot.push(big);
+		}
+		else {
+			for(let i = 1; i <= this.players.length; i++) {
+				let p = this.players[(this.button+i) % this.players.length],
+					bet = p.bet(this.stage, p.wager);
+				if(bet.length) pot.push(bet);
+				p.wager = 0;
+			}
+		}
+		//pot good ops
+	}
+
 	deal () {
 		for(let i = 1; i <= this.players.length; i++) {
 			this.players[(this.button+i) % this.players.length].hand = drawHand(this.deck, 2);
 		}
+		this.stage++;
 	}
 
 	flop () {
 		let burn = drawHand(this.deck, 1),
 			flop = drawHand(this.deck, 3);
 		this.cards = this.cards.concat(flop);
+		this.stage++;
 	}
 
 	turn () {
 		let burn = drawHand(this.deck, 1),
 			turn = drawHand(this.deck, 1);
 		this.cards = this.cards.concat(turn);
+		this.stage++;
 	}
 
 	river () {
 		let burn = drawHand(this.deck, 1),
 			river = drawHand(this.deck, 1);
 		this.cards = this.cards.concat(river);
+		this.stage++;
 	}
 
 	result () {
@@ -156,7 +185,18 @@ class Player {
 	constructor (socketid, name) {
 		this.socketid = socketid;
 		this.name = name;
+		this.chips = 1000;
 		this.hand = [];
+		this.wager = 0;
+	}
+
+	bet (stage, amount) {
+		let bet = [];
+		if(amount <= this.chips) {
+			bet = [0, stage, this.name, amount];
+			this.chips -= amount;
+		}
+		return bet;
 	}
 }
 
