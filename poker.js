@@ -65,7 +65,6 @@ class Table {
 		for(let i = 0; i < this.players.length; i++) {
 			this.players.wager = 0;
 			this.players[i].hand = [];
-			console.log(this.players[i].name, this.players[i].chips);
 			tally+=this.players[i].chips;
 		}
 		console.log("player tally:", tally, "this.chips: ", this.chips);
@@ -124,7 +123,7 @@ class Table {
 			return;
 		}
 
-		console.log("small (chips)/big (chips)", small.name, small.chips, "/", big.name, big.chips);
+		//console.log("small (chips)/big (chips)", small.name, small.chips, "/", big.name, big.chips);
 
 		if(!small.setWager(this.sb)) {
 			console.log("asking", small.name, " to leave");
@@ -141,7 +140,7 @@ class Table {
 		if(this.chips) {
 			let chips = [0, this.stage, "forefeited", this.chips];
 			this.pot.push(chips);
-			console.log("chips: ", this.chips);
+			//console.log("chips: ", this.chips);
 			this.chips = 0;
 		}
 		this.pot.push(small.bet(this.stage));
@@ -159,9 +158,9 @@ class Table {
 			}
 	
 			//TESTING
-			//TESTING 10 CHIP BETS
+			//TESTING RANDOM CHIP BETS
 			//TESTING
-			if(p.setWager(10)) {
+			if(p.setWager(Math.floor(Math.random() * 250))) {
 				let bet = p.bet(this.stage);
 				this.pot.push(bet);
 			}
@@ -178,19 +177,24 @@ class Table {
 
 	payouts () {
 		let total = 0,
-			split = 0;
+			split = 0,
+			change = 0,
+			numWinners = this.winner[1].length;
 
 		if(this.stage === 4) {
 			for(let i = 0; i < this.pot.length; i++) {
 				total += this.pot[i][3];
 			}
-			split = total / this.winner[1].length;
+			split = total / numWinners;
+			change = (split % 1) * numWinners;
 
-			console.log("total/split:", total, "/", split);
+			console.log("total/split/change:", total, "/", split, "/", change);
+			console.log("mf split:", Math.floor(split), "change ceil", Math.ceil(change), "change round", Math.round(change));
 
-			for(let j = 0; j < this.winner[1].length; j++) {
-				this.players[this.winner[1][j]].chips += split;
+			for(let j = 0; j < numWinners; j++) {
+				this.players[this.winner[1][j]].chips += Math.floor(split);
 			}
+			this.chips += Math.round(change);
 		}
 	}
 
