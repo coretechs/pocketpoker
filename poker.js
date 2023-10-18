@@ -65,7 +65,7 @@ class Table {
 		//reset player hands and wagers
 		let tally = 0;
 		for(let i = 0; i < this.players.length; i++) {
-			this.players.wager = 0;
+			this.players[i].wager = 0;
 			this.players[i].hand = [];
 			tally+=this.players[i].chips;
 		}
