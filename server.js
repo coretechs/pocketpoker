@@ -122,7 +122,7 @@ io.on("connection", socket => {
 
 	socket.on("fold", () => {
 		io.to(t.name).emit("message", "player " + p.name + " folds");	
-		p.hand = [ "Fold", 0 ];
+		p.fold();
 	});
 
 	socket.onAny((event, ...args) => {

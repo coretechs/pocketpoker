@@ -44,24 +44,31 @@ class Table {
 		this.button = 0;
 		this.sb = 10;
 		this.bb = 25;
+		this.chips = 0;
 		this.reset();
 	}
 
 	reset () {
-		// each stage push [index,stage,player,chips]
+		// each stage push [sidepot,stage,player,chips]
 		// index for sidepots (default 0)
 		// stage 0: blind, 1: deal, 2: flop, 3: turn, 4: river
 		this.stage = 0;
+		this.sidepot = 0;
 		this.pot = [];
 		this.cards = [];
 		this.best = [];
 		this.winner = [];
 		this.deck = shuffleDeck(cards);
 
-		//reset player hands
+		//reset player hands and wagers
+		let tally = 0;
 		for(let i = 0; i < this.players.length; i++) {
+			this.players.wager = 0;
 			this.players[i].hand = [];
+			console.log(this.players[i].name, this.players[i].chips);
+			tally+=this.players[i].chips;
 		}
+		console.log("player tally:", tally, "this.chips: ", this.chips);
 	}
 
 	join (player) {
@@ -79,18 +86,21 @@ class Table {
 	leave (name) {
 		let dealer = false;
 		for(let i = 0; i < this.players.length; i++) {
-			if(this.players[i].name === name) {
+			let p = this.players[i];
+			if(p.name === name) {
+				console.log("LEAVING: ", p);
+				this.chips += p.chips;
 				this.players.splice(i, 1);
 				if(this.button === i) {
 					log("dealer is leaving, button index: " + this.button);
 					this.button--;
-					this.nextRound();
 					dealer = true;
 				}
 				else if(this.button > i) {
 					this.button--;
 				}
-				log(name + " has left the table, player index: " + i);
+				log(name + " has left the table, player index: " + i + ", remaining players: " + this.players.length);
+				this.nextRound();
 			}
 		}
 		return dealer;
@@ -100,32 +110,70 @@ class Table {
 		this.reset();
 		this.round++;
 		this.button = (this.button + 1) % this.players.length;
+		this.blinds();
+	}
+
+	blinds() {
+		let small = this.players[(this.button + this.players.length - 2) % this.players.length],
+			big = this.players[(this.button + this.players.length - 1) % this.players.length];
+
+		//if last player
+		if(small.name === big.name) {
+			small.chips += this.chips;
+			this.chips = 0;
+			return;
+		}
+
+		console.log("small (chips)/big (chips)", small.name, small.chips, "/", big.name, big.chips);
+
+		if(!small.setWager(this.sb)) {
+			console.log("asking", small.name, " to leave");
+			this.leave(small.name);
+			return;
+		}
+		if(!big.setWager(this.bb)) {
+			small.chips += this.sb;
+			console.log("asking", big.name, " to leave");
+			this.leave(big.name);
+			return;
+		}
+		
+		if(this.chips) {
+			let chips = [0, this.stage, "forefeited", this.chips];
+			this.pot.push(chips);
+			console.log("chips: ", this.chips);
+			this.chips = 0;
+		}
+		this.pot.push(small.bet(this.stage));
+		this.pot.push(big.bet(this.stage));
+
 	}
 
 	bets () {
-		if(this.stage === 0) {
-			console.log("a: ", (this.button + this.players.length -2) % this.players.length);
-			console.log("b: ", (this.button + this.players.length -1) % this.players.length);
+		for(let i = 1; i <= this.players.length; i++) {
+			let p = this.players[(this.button+i) % this.players.length];
+			
+			if(p.hand && p.hand[0] == "Fold") {
+				console.log("skipping ", p.name, " because they folded");
+				continue;
+			}
+	
+			//TESTING
+			//TESTING 10 CHIP BETS
+			//TESTING
+			if(p.setWager(10)) {
+				let bet = p.bet(this.stage);
+				this.pot.push(bet);
+			}
+			else {
+				//this.leave(p.name);
+				console.log("making side pot at round: ", this.round, " stage: ", this.stage, " / folding player: ", p.name, p.hand);
 
-			let small = this.players[(this.button + this.players.length - 2) % this.players.length].bet(this.stage, this.sb),
-				big = this.players[(this.button + this.players.length - 1) % this.players.length].bet(this.stage, this.bb);
-			//if small.length > 0 && big.length > 0
-			//check if player is out of moneys
-			if(small.length && big.length) {
-				this.pot.push(small);
-				this.pot.push(big);
+				p.fold();				
+				//do side pot operations here
+				this.sidepot++;
 			}
 		}
-		else {
-			for(let i = 1; i <= this.players.length; i++) {
-				let p = this.players[(this.button+i) % this.players.length];
-				p.wager = 10;
-				let bet = p.bet(this.stage, p.wager);
-				if(bet.length) this.pot.push(bet);
-				p.wager = 0;
-			}
-		}
-		//pot good ops
 	}
 
 	payouts () {
@@ -136,13 +184,13 @@ class Table {
 			for(let i = 0; i < this.pot.length; i++) {
 				total += this.pot[i][3];
 			}
-			
 			split = total / this.winner[1].length;
+
+			console.log("total/split:", total, "/", split);
 
 			for(let j = 0; j < this.winner[1].length; j++) {
 				this.players[this.winner[1][j]].chips += split;
 			}
-			this.stage = 0;
 		}
 	}
 
@@ -202,8 +250,6 @@ class Table {
 		else {
 			this.winner.push(this.players[this.winner[1][0]].name);
 		}
-
-		this.payouts();
 	}
 }
 
@@ -216,14 +262,24 @@ class Player {
 		this.wager = 0;
 	}
 
-	bet (stage, amount) {
-		let bet = [];
-		if(amount <= this.chips) {
-			bet = [0, stage, this.name, amount];
-			this.chips -= amount;
-			console.log("subtracting ", amount, " from ", this.name);
+	setWager (amount) {
+		if(amount > this.chips) {
+			console.log(this.name, "aint got enough chips, only got: ", this.chips);
+			return false;
 		}
+		this.wager = amount;
+		this.chips -= amount;
+		return true;
+	}
+
+	bet (stage, idx = 0) {
+		let bet = [idx, stage, this.name, this.wager];
+		this.wager = 0;
 		return bet;
+	}
+
+	fold () {
+		this.hand = [ "Fold", 0 ];
 	}
 }
 
@@ -413,9 +469,9 @@ t.join(p4);
 t.join(p5);
 t.join(p6);
 
-for(let x = 0; x < 100; x++)
+for(let x = 0; x < 1000; x++)
 {
-	t.bets();
+	if(t.players.length <= 1) break;
 	t.deal();
 	t.bets();
 	t.flop();
@@ -429,11 +485,15 @@ for(let x = 0; x < 100; x++)
 	t.nextRound();
 }
 console.log("%o",t.players);
-let total = 0
+let total = 0;
+for(let i = 0; i < t.pot.length; i++) {
+	total += t.pot[i][3];
+}
+console.log("total pre tally:", total);
 for(let x = 0; x < t.players.length; x++) {
 	total += t.players[x].chips;
 }
-console.log(total);
+console.log("final total:", total);
 
 /*
 
