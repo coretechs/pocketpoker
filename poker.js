@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 const cards = [ 
 	"2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "TH", "JH", "QH", "KH", "AH",
 	"2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "TD", "JD", "QD", "KD", "AD",
@@ -160,7 +162,7 @@ class Table {
 			//TESTING
 			//TESTING RANDOM CHIP BETS
 			//TESTING
-			if(p.setWager(Math.floor(Math.random() * 250))) {
+			if(p.setWager(crypto.randomInt(0, p.chips+1))) {
 				let bet = p.bet(this.stage);
 				this.pot.push(bet);
 			}
@@ -297,7 +299,7 @@ function shuffleDeck (deck) {
 
 	for(let i = unshuffled.length; i > 0; i--)
 	{
-		let rand = Math.floor(Math.random() * i);
+		let rand = crypto.randomInt(i);
 		shuffled.push(unshuffled.splice(rand, 1)[0]);
 	}
 	return shuffled;
