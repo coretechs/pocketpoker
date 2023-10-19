@@ -114,7 +114,7 @@ class Table {
 		this.blinds();
 	}
 
-	blinds() {
+	blinds () {
 		let small = this.players[(this.button + this.players.length - 2) % this.players.length],
 			big = this.players[(this.button + this.players.length - 1) % this.players.length];
 
@@ -133,20 +133,24 @@ class Table {
 			return;
 		}
 		if(!big.setWager(this.bb)) {
+			//return small blind!
 			small.chips += this.sb;
 			console.log("asking", big.name, " to leave");
 			this.leave(big.name);
 			return;
 		}
 		
+		this.pot.push(small.bet(this.stage));
+		this.pot.push(big.bet(this.stage));
+
+		//fractional chips accumulate in this.chips, join first available betting pot
 		if(this.chips) {
 			let chips = [0, this.stage, "forefeited", this.chips];
 			this.pot.push(chips);
 			//console.log("chips: ", this.chips);
 			this.chips = 0;
 		}
-		this.pot.push(small.bet(this.stage));
-		this.pot.push(big.bet(this.stage));
+
 
 	}
 
@@ -167,11 +171,11 @@ class Table {
 				this.pot.push(bet);
 			}
 			else {
-				//this.leave(p.name);
-				console.log("making side pot at round: ", this.round, " stage: ", this.stage, " / folding player: ", p.name, p.hand);
-
-				p.fold();				
+				//console.log(" / folding player: ", p.name, p.hand);
+				//p.fold();				
+				
 				//do side pot operations here
+				console.log("making side pot at round: ", this.round, " stage: ", this.stage);
 				this.sidepot++;
 			}
 		}
@@ -196,6 +200,7 @@ class Table {
 			for(let j = 0; j < numWinners; j++) {
 				this.players[this.winner[1][j]].chips += Math.floor(split);
 			}
+			//fractional chips accumulate here and are paid out to next pot
 			this.chips += Math.round(change);
 		}
 	}
@@ -282,6 +287,10 @@ class Player {
 		let bet = [idx, stage, this.name, this.wager];
 		this.wager = 0;
 		return bet;
+	}
+
+	check () {
+		setWager(0);
 	}
 
 	fold () {
