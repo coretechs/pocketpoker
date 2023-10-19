@@ -57,7 +57,7 @@ class Table {
 		this.stage = 0;
 		this.pot = [];
 		this.potMin = this.bb;
-		this.sidepot = 0;
+		this.sidepot = [];
 		this.cards = [];
 		this.best = [];
 		this.winner = [];
@@ -169,25 +169,19 @@ class Table {
 			//TESTING
 			//crypto.randomInt(0, p.chips+1)
 			if(p.setWager(this.bb * crypto.randomInt(1, this.stage+1))) {
-				if(p.wager >= this.potMin) {
-					this.potMin = p.wager;
-					console.log("potMin set to: ", this.potMin);
-					this.pot.push(p.bet(this.stage));	
-				}
-				else {
-					//do side pot operations here
+				console.log(p.wager, this.potMin);
+				if(p.chips < this.potMin) {
 					p.unsetWager();
-					p.fold();
-					//clone existing pot
-					//reduce balances of latest stage to short player amount
-
-					//fold hand of short player, rerun result()
-					console.log("making side pot at round: ", this.round, " stage: ", this.stage, "pot min: ", this.potMin);
-					this.sidepot++;	
+					p.setWager(p.chips);
+					console.log("making side pot for:", p.name, " at round: ", this.round, " stage: ", this.stage, "pot min: ", this.potMin);
+					this.sidepot.push(p.name);
 				}
+				this.potMin = (p.wager >= this.potMin) ? p.wager : this.potMin;
+				console.log(p.name , " has bet potMin / set to: ", this.potMin);
+				this.pot.push(p.bet(this.stage));	
 			}
 			else {
-				console.log(" / folding player: ", p.name, p.hand);
+				console.log(" /////////////// folding player: ", p.name, p.hand);
 				p.fold();				
 			}
 		}
