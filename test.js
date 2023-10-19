@@ -1,12 +1,12 @@
 const poker = require("./poker.js");
 
 let t = new poker.Table("12345");
-let p1 = new poker.Player(0, "dan");
-let p2 = new poker.Player(1, "bob");
-let p3 = new poker.Player(2, "jim");
-let p4 = new poker.Player(3, "sue");
-let p5 = new poker.Player(4, "cam");
-let p6 = new poker.Player(5, "jen");
+let p1 = new poker.Player(0, "ALBERT");
+let p2 = new poker.Player(1, "BOBBY");
+let p3 = new poker.Player(2, "CAM");
+let p4 = new poker.Player(3, "DANIEL");
+let p5 = new poker.Player(4, "ELIZA");
+let p6 = new poker.Player(5, "FRED");
 
 t.join(p1);
 t.join(p2);
