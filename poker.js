@@ -176,13 +176,15 @@ class Table {
 					console.log("making side pot for:", p.name, " at round: ", this.round, " stage: ", this.stage, "pot min: ", this.potMin);
 					this.sidepot.push(p.name);
 				}
+				else if(p.wager < this.potMin) {
+					console.log(" /////////////// folding player: ", p.name, p.hand);
+					p.unsetWager();
+					p.fold();
+					continue;
+				}
 				this.potMin = (p.wager >= this.potMin) ? p.wager : this.potMin;
 				console.log(p.name , " has bet potMin / set to: ", this.potMin);
 				this.pot.push(p.bet(this.stage));	
-			}
-			else {
-				console.log(" /////////////// folding player: ", p.name, p.hand);
-				p.fold();				
 			}
 		}
 	}
