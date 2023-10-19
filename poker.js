@@ -55,8 +55,9 @@ class Table {
 		// index for sidepots (default 0)
 		// stage 0: blind, 1: deal, 2: flop, 3: turn, 4: river
 		this.stage = 0;
-		this.sidepot = 0;
 		this.pot = [];
+		this.potMin = this.bb;
+		this.sidepot = 0;
 		this.cards = [];
 		this.best = [];
 		this.winner = [];
@@ -158,25 +159,36 @@ class Table {
 		for(let i = 1; i <= this.players.length; i++) {
 			let p = this.players[(this.button+i) % this.players.length];
 			
-			if(p.hand && p.hand[0] == "Fold") {
-				console.log("skipping ", p.name, " because they folded");
+			if((p.hand && p.hand[0] == "Fold") || p.allIn) {
+				//console.log("skipping ", p.name, " because they folded");
 				continue;
 			}
 	
 			//TESTING
 			//TESTING RANDOM CHIP BETS
 			//TESTING
-			if(p.setWager(crypto.randomInt(0, p.chips+1))) {
-				let bet = p.bet(this.stage);
-				this.pot.push(bet);
+			//crypto.randomInt(0, p.chips+1)
+			if(p.setWager(this.bb * crypto.randomInt(1, this.stage+1))) {
+				if(p.wager >= this.potMin) {
+					this.potMin = p.wager;
+					console.log("potMin set to: ", this.potMin);
+					this.pot.push(p.bet(this.stage));	
+				}
+				else {
+					//do side pot operations here
+					p.unsetWager();
+					p.fold();
+					//clone existing pot
+					//reduce balances of latest stage to short player amount
+
+					//fold hand of short player, rerun result()
+					console.log("making side pot at round: ", this.round, " stage: ", this.stage, "pot min: ", this.potMin);
+					this.sidepot++;	
+				}
 			}
 			else {
-				//console.log(" / folding player: ", p.name, p.hand);
-				//p.fold();				
-				
-				//do side pot operations here
-				console.log("making side pot at round: ", this.round, " stage: ", this.stage);
-				this.sidepot++;
+				console.log(" / folding player: ", p.name, p.hand);
+				p.fold();				
 			}
 		}
 	}
@@ -271,6 +283,7 @@ class Player {
 		this.chips = 1000;
 		this.hand = [];
 		this.wager = 0;
+		this.allIn = false;
 	}
 
 	setWager (amount) {
@@ -280,7 +293,19 @@ class Player {
 		}
 		this.wager = amount;
 		this.chips -= amount;
+		if(this.chips === 0) {
+			console.log("ALL IN BABY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			this.allIn = true;
+		}
 		return true;
+	}
+
+	unsetWager () {
+		if(this.wager) {
+			this.chips += this.wager;
+			this.wager = 0;
+			if(this.chips > 0) this.allIn = false;
+		}
 	}
 
 	bet (stage, idx = 0) {
@@ -290,7 +315,7 @@ class Player {
 	}
 
 	check () {
-		setWager(0);
+		this.wager = 0;
 	}
 
 	fold () {
