@@ -15,17 +15,18 @@ t.join(p4);
 t.join(p5);
 t.join(p6);
 
-for(let x = 0; x < 1000; x++)
+for(let x = 0; x < 100; x++)
 {
+	let winner = false;
 	if(t.players.length <= 1) break;
 	t.deal();
-	t.bets();
+	if (winner === false) winner = t.bets();
 	t.flop();
-	t.bets();
+	if (winner === false) winner = t.bets();
 	t.turn();
-	t.bets();
+	if (winner === false) winner = t.bets();
 	t.river();
-	t.bets();
+	if (winner === false) winner = t.bets();
 	t.result();
 	t.payouts();
 	t.nextRound();
