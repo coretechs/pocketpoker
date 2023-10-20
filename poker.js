@@ -55,6 +55,7 @@ class Table {
 		// index for sidepots (default 0)
 		// stage 0: blind, 1: deal, 2: flop, 3: turn, 4: river
 		this.stage = 0;
+		this.folds = 0;
 		this.pot = [];
 		this.potMin = this.bb;
 		this.sidepot = [];
@@ -109,6 +110,7 @@ class Table {
 	}
 
 	nextRound () {
+		console.log("-------------------------nextRound-------------------------");
 		this.reset();
 		this.round++;
 		this.button = (this.button + 1) % this.players.length;
@@ -116,6 +118,7 @@ class Table {
 	}
 
 	blinds () {
+		console.log("-------------------------blinds-------------------------");
 		let small = this.players[(this.button + this.players.length - 2) % this.players.length],
 			big = this.players[(this.button + this.players.length - 1) % this.players.length];
 
@@ -141,8 +144,8 @@ class Table {
 			return;
 		}
 		
-		this.pot.push(small.bet(this.stage));
-		this.pot.push(big.bet(this.stage));
+		this.pot.push(small.bet(this.round, this.stage));
+		this.pot.push(big.bet(this.round, this.stage));
 
 		//fractional chips accumulate in this.chips, join first available betting pot
 		if(this.chips) {
@@ -151,11 +154,10 @@ class Table {
 			//console.log("chips: ", this.chips);
 			this.chips = 0;
 		}
-
-
 	}
 
 	bets () {
+		console.log("-------------------------bets-------------------------");
 		//for(let i = 1; i <= this.players.length; i++) {
 		let i = 1;
 		let betting = true;
@@ -174,13 +176,21 @@ class Table {
 				continue;
 			}
 
-			console.log(p.name, p.wager, this.potMin);
+			console.log(p.name, "wager:", p.wager, "potMin:", this.potMin, "folds:", this.folds);
+			if(this.folds === (this.players.length - 1)) {
+				console.log("WINNER:", p.name, "folds:", this.folds);
+				this.winner = p.name;
+				betting = false;
+				return;
+			}
 
 			if(p.wager === this.potMin) {
 				console.log("betting is now false");
 				betting = false;
 				break;
 			}
+
+
 	
 			//TESTING
 			//TESTING RANDOM CHIP BETS
@@ -198,6 +208,7 @@ class Table {
 			if(p.setWager(wager)) {
 				if(p.wager === 0) {
 					p.fold();
+					this.folds++;
 					continue;
 				}
 
@@ -210,6 +221,7 @@ class Table {
 				else if(p.wager < this.potMin) {
 					p.unsetWager();
 					p.fold();
+					this.folds++;
 					continue;
 				}
 				this.potMin = (p.wager >= this.potMin) ? p.wager : this.potMin;
@@ -217,24 +229,28 @@ class Table {
 			else {
 				console.log(p.name, " hmm shouldnt happen fold");
 				p.fold();
+				this.folds++;
 			}
-
 		};
 
 		for(let j = 0; j < this.players.length; j++) {
 			let p = this.players[j];
 			console.log("pot bet pushed - round:", this.round, "stage:", this.stage, "name:", p.name , "bet:", p.wager, "potMin:", this.potMin);
-			this.pot.push(p.bet(this.stage));
+			this.pot.push(p.bet(this.round, this.stage));
 		}
 	}
 
 	payouts () {
+		console.log("-------------------------payouts-------------------------");
 		let total = 0,
 			split = 0,
 			change = 0,
-			numWinners = this.winner[1].length;
+			numWinners = (this.winner.length ? this.winner[1].length : 0);
 
-		if(this.stage === 4) {
+		if(numWinners === 0) {
+			console.log("AWERDING", this.winner);
+		}
+		else if(this.stage === 4) {
 			for(let i = 0; i < this.pot.length; i++) {
 				total += this.pot[i][3];
 			}
@@ -257,6 +273,7 @@ class Table {
 	}
 
 	deal () {
+		console.log("-------------------------deal-------------------------");
 		for(let i = 1; i <= this.players.length; i++) {
 			this.players[(this.button+i) % this.players.length].hand = drawHand(this.deck, 2);
 		}
@@ -264,6 +281,7 @@ class Table {
 	}
 
 	flop () {
+		console.log("-------------------------flop-------------------------");
 		let burn = drawHand(this.deck, 1),
 			flop = drawHand(this.deck, 3);
 		this.cards = this.cards.concat(flop);
@@ -271,6 +289,7 @@ class Table {
 	}
 
 	turn () {
+		console.log("-------------------------turn-------------------------");
 		let burn = drawHand(this.deck, 1),
 			turn = drawHand(this.deck, 1);
 		this.cards = this.cards.concat(turn);
@@ -278,6 +297,7 @@ class Table {
 	}
 
 	river () {
+		console.log("-------------------------river-------------------------");
 		let burn = drawHand(this.deck, 1),
 			river = drawHand(this.deck, 1);
 		this.cards = this.cards.concat(river);
@@ -285,6 +305,7 @@ class Table {
 	}
 
 	result () {
+		console.log("-------------------------result-------------------------");
 		for(let i = 0; i < this.players.length; i++) {
 			if(this.players[i].hand.length) {
 				let set = this.players[i].hand.concat(this.cards),
@@ -350,8 +371,8 @@ class Player {
 		}
 	}
 
-	bet (stage, idx = 0) {
-		let bet = [idx, stage, this.name, this.wager];
+	bet (round, stage) {
+		let bet = [round, stage, this.name, this.wager];
 		this.wager = 0;
 		return bet;
 	}
