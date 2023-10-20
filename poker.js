@@ -174,12 +174,22 @@ class Table {
 				console.log("WINNER:", p.name, "folds:", this.folds);
 				this.winner = p.name;
 				betting = false;
+				for(let j = 0; j < this.players.length; j++) {
+					let pp = this.players[j];
+					console.log("pot bet pushed - round:", this.round, "stage:", this.stage, "name:", pp.name , "bet:", pp.wager, "potMin:", this.potMin);
+					this.pot.push(pp.bet(this.round, this.stage));
+				}
 				return true;
 			}
 			
 			if((this.folds + this.allIns) === this.players.length) {
 				console.log("ALL INS AND FOLDS", this.allIns, this.folds);
 				betting = false;
+				for(let j = 0; j < this.players.length; j++) {
+					let pp = this.players[j];
+					console.log("pot bet pushed - round:", this.round, "stage:", this.stage, "name:", pp.name , "bet:", pp.wager, "potMin:", this.potMin);
+					this.pot.push(pp.bet(this.round, this.stage));
+				}
 				return true;
 			}
 
@@ -208,12 +218,11 @@ class Table {
 			//TESTING
 			//crypto.randomInt(0, p.chips+1)
 
-			let wager = this.potMin * crypto.randomInt(0, 2);
+			let wager = this.potMin * crypto.randomInt(0, 3);
 			console.log("wager:", wager, "potMin: ", this.potMin);
 			
 			if(wager >= p.chips) {
 				wager = p.chips;
-				this.allIns++;
 				//all in
 			}
 
@@ -224,7 +233,10 @@ class Table {
 					continue;
 				}
 
-				if((p.chips + p.wager) < this.potMin) {
+				if(p.chips === 0) {
+					this.allIns++;
+				}
+				else if((p.chips + p.wager) < this.potMin) {
 					p.unsetWager();
 					p.setWager(p.chips);
 					this.allIns++;
@@ -245,7 +257,7 @@ class Table {
 				this.folds++;
 			}
 
-			console.log(p.name, "wager:", p.wager, "potMin:", this.potMin, "folds:", this.folds, "allIns:", this.allIns);
+			console.log("wager:", p.wager, "potMin:", this.potMin, "folds:", this.folds, "allIns:", this.allIns);
 		};
 
 		for(let j = 0; j < this.players.length; j++) {

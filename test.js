@@ -18,7 +18,6 @@ t.join(p6);
 for(let x = 0; x < 100; x++)
 {
 	let winner = false;
-	if(t.players.length <= 1) break;
 	t.deal();
 	if (winner === false) winner = t.bets();
 	t.flop();
