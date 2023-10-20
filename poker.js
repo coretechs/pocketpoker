@@ -173,22 +173,14 @@ class Table {
 			if(this.folds === (this.players.length - 1)) {
 				console.log("ONE PLAYER REMAINING", "folds:", this.folds);
 				betting = false;
-				for(let j = 0; j < this.players.length; j++) {
-					let pp = this.players[j];
-					console.log("pot bet pushed - round:", this.round, "stage:", this.stage, "name:", pp.name , "bet:", pp.wager, "potMin:", this.potMin);
-					this.pot.push(pp.bet(this.round, this.stage));
-				}
+				pushWagers();
 				return true;
 			}
 			
 			if((this.folds + this.allIns) === this.players.length) {
 				console.log("ALL INS AND FOLDS", this.allIns, this.folds);
 				betting = false;
-				for(let j = 0; j < this.players.length; j++) {
-					let pp = this.players[j];
-					console.log("pot bet pushed - round:", this.round, "stage:", this.stage, "name:", pp.name , "bet:", pp.wager, "potMin:", this.potMin);
-					this.pot.push(pp.bet(this.round, this.stage));
-				}
+				pushWagers();
 				return true;
 			}
 
@@ -202,16 +194,12 @@ class Table {
 				continue;
 			}
 
-	
-
 			if(p.wager === this.potMin) {
 				console.log("betting is now false");
 				betting = false;
 				break;
 			}
 
-
-	
 			//TESTING
 			//TESTING RANDOM CHIP BETS
 			//TESTING
@@ -259,11 +247,7 @@ class Table {
 			//console.log("wager:", p.wager, "potMin:", this.potMin, "folds:", this.folds, "allIns:", this.allIns);
 		};
 
-		for(let j = 0; j < this.players.length; j++) {
-			let p = this.players[j];
-			console.log("pot bet pushed - round:", this.round, "stage:", this.stage, "name:", p.name , "bet:", p.wager, "potMin:", this.potMin);
-			this.pot.push(p.bet(this.round, this.stage));
-		}
+		pushWagers();
 		return false;
 	}
 
@@ -329,6 +313,14 @@ class Table {
 			river = drawHand(this.deck, 1);
 		this.cards = this.cards.concat(river);
 		this.stage++;
+	}
+
+	pushWagers () {
+		for(let i = 0; i < this.players.length; i++) {
+			let p = this.players[i];
+			console.log("pot bet pushed - round:", this.round, "stage:", this.stage, "name:", p.name , "bet:", p.wager, "potMin:", this.potMin);
+			this.pot.push(p.bet(this.round, this.stage));
+		}
 	}
 
 	result () {
