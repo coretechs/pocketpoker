@@ -134,14 +134,14 @@ class Table {
 		//console.log("small (chips)/big (chips)", small.name, small.chips, "/", big.name, big.chips);
 
 		if(!small.setWager(this.sb)) {
-			console.log("asking", small.name, " to leave");
+			console.log("asking", small.name, "to leave");
 			this.leave(small.name);
 			return;
 		}
 		if(!big.setWager(this.bb)) {
 			//return small blind!
 			small.chips += this.sb;
-			console.log("asking", big.name, " to leave");
+			console.log("asking", big.name, "to leave");
 			this.leave(big.name);
 			return;
 		}
@@ -168,7 +168,7 @@ class Table {
 			let p = this.players[(this.button+i) % this.players.length];
 			i++;
 
-			console.log("folds:", this.folds, "allIns:", this.allIns, "players.length:", this.players.length);
+			//console.log("folds:", this.folds, "allIns:", this.allIns, "players.length:", this.players.length);
 
 			if(this.folds === (this.players.length - 1)) {
 				console.log("WINNER:", p.name, "folds:", this.folds);
@@ -219,7 +219,7 @@ class Table {
 			//crypto.randomInt(0, p.chips+1)
 
 			let wager = this.potMin * crypto.randomInt(0, 3);
-			console.log("wager:", wager, "potMin: ", this.potMin);
+			//console.log("wager:", wager, "potMin: ", this.potMin)
 			
 			if(wager >= p.chips) {
 				wager = p.chips;
@@ -244,7 +244,7 @@ class Table {
 					this.sidepot.push(p.name);
 				}
 				else if(p.wager < this.potMin) {
-					p.unsetWager();
+					//p.unsetWager();
 					p.fold();
 					this.folds++;
 					continue;
@@ -257,7 +257,7 @@ class Table {
 				this.folds++;
 			}
 
-			console.log("wager:", p.wager, "potMin:", this.potMin, "folds:", this.folds, "allIns:", this.allIns);
+			//console.log("wager:", p.wager, "potMin:", this.potMin, "folds:", this.folds, "allIns:", this.allIns);
 		};
 
 		for(let j = 0; j < this.players.length; j++) {
@@ -336,7 +336,6 @@ class Table {
 		console.log("-------------------------result-------------------------");
 		for(let i = 0; i < this.players.length; i++) {
 			let p = this.players[i];
-			p.unsetWager();
 
 			if(p.hand.length) {
 				let set = p.hand.concat(this.cards),
@@ -378,6 +377,7 @@ class Player {
 	}
 
 	setWager (amount) {
+		if(amount === 0) return true;
 		if(amount > (this.chips + this.wager)) {
 			console.log(this.name, "tried to wager:", amount, "but he only has: ", (this.chips + this.wager));
 			return false;
