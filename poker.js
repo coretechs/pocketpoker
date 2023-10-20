@@ -173,14 +173,14 @@ class Table {
 			if(this.folds === (this.players.length - 1)) {
 				console.log("ONE PLAYER REMAINING", "folds:", this.folds);
 				betting = false;
-				pushWagers();
+				this.pushWagers();
 				return true;
 			}
 			
 			if((this.folds + this.allIns) === this.players.length) {
 				console.log("ALL INS AND FOLDS", this.allIns, this.folds);
 				betting = false;
-				pushWagers();
+				this.pushWagers();
 				return true;
 			}
 
@@ -247,7 +247,7 @@ class Table {
 			//console.log("wager:", p.wager, "potMin:", this.potMin, "folds:", this.folds, "allIns:", this.allIns);
 		};
 
-		pushWagers();
+		this.pushWagers();
 		return false;
 	}
 
