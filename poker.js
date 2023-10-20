@@ -171,8 +171,7 @@ class Table {
 			//console.log("folds:", this.folds, "allIns:", this.allIns, "players.length:", this.players.length);
 
 			if(this.folds === (this.players.length - 1)) {
-				console.log("WINNER:", p.name, "folds:", this.folds);
-				this.winner = p.name;
+				console.log("ONE PLAYER REMAINING", "folds:", this.folds);
 				betting = false;
 				for(let j = 0; j < this.players.length; j++) {
 					let pp = this.players[j];
