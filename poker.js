@@ -66,7 +66,7 @@ class Table {
 		this.deck = shuffleDeck(cards);
 
 		//reset player hands and wagers
-		let tally = 0;
+		/*let tally = 0;
 		for(let i = 0; i < this.players.length; i++) {
 			this.players[i].wager = 0;
 			this.players[i].hand = [];
@@ -74,6 +74,7 @@ class Table {
 			tally+=this.players[i].chips;
 		}
 		console.log("player tally:", tally, "this.chips: ", this.chips);
+		*/
 	}
 
 	join (player) {
@@ -105,22 +106,22 @@ class Table {
 					this.button--;
 				}
 				log(name + " has left the table, player index: " + i + ", remaining players: " + this.players.length);
-				this.nextRound();
+				//this.nextRound();
 			}
 		}
 		return dealer;
 	}
 
 	nextRound () {
-		console.log("-------------------------nextRound-------------------------");
+		//console.log("-------------------------nextRound-------------------------");
 		this.reset();
 		this.round++;
 		this.button = (this.button + 1) % this.players.length;
-		this.blinds();
+		//this.blinds();
 	}
 
 	blinds () {
-		console.log("-------------------------blinds-------------------------");
+		//console.log("-------------------------blinds-------------------------");
 		let small = this.players[(this.button + this.players.length - 2) % this.players.length],
 			big = this.players[(this.button + this.players.length - 1) % this.players.length];
 
@@ -159,7 +160,7 @@ class Table {
 	}
 
 	bets () {
-		console.log("-------------------------bets-------------------------");
+		//console.log("-------------------------bets-------------------------");
 		//for(let i = 1; i <= this.players.length; i++) {
 		let i = 1;
 		let betting = true;
@@ -252,7 +253,7 @@ class Table {
 	}
 
 	payouts () {
-		console.log("-------------------------payouts-------------------------");
+		//console.log("-------------------------payouts-------------------------");
 		let total = 0,
 			split = 0,
 			change = 0,
@@ -284,7 +285,7 @@ class Table {
 	}
 
 	deal () {
-		console.log("-------------------------deal-------------------------");
+		//console.log("-------------------------deal-------------------------");
 		for(let i = 1; i <= this.players.length; i++) {
 			this.players[(this.button+i) % this.players.length].hand = drawHand(this.deck, 2);
 		}
@@ -292,7 +293,7 @@ class Table {
 	}
 
 	flop () {
-		console.log("-------------------------flop-------------------------");
+		//console.log("-------------------------flop-------------------------");
 		let burn = drawHand(this.deck, 1),
 			flop = drawHand(this.deck, 3);
 		this.cards = this.cards.concat(flop);
@@ -300,7 +301,7 @@ class Table {
 	}
 
 	turn () {
-		console.log("-------------------------turn-------------------------");
+		//console.log("-------------------------turn-------------------------");
 		let burn = drawHand(this.deck, 1),
 			turn = drawHand(this.deck, 1);
 		this.cards = this.cards.concat(turn);
@@ -308,7 +309,7 @@ class Table {
 	}
 
 	river () {
-		console.log("-------------------------river-------------------------");
+		//console.log("-------------------------river-------------------------");
 		let burn = drawHand(this.deck, 1),
 			river = drawHand(this.deck, 1);
 		this.cards = this.cards.concat(river);
@@ -324,7 +325,7 @@ class Table {
 	}
 
 	result () {
-		console.log("-------------------------result-------------------------");
+		//console.log("-------------------------result-------------------------");
 		for(let i = 0; i < this.players.length; i++) {
 			let p = this.players[i];
 

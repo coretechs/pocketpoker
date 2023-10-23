@@ -15,7 +15,7 @@ t.join(p4);
 t.join(p5);
 t.join(p6);
 
-for(let x = 0; x < 10; x++)
+for(let x = 0; x < 100; x++)
 {
 	let winner = false;
 	t.deal();
