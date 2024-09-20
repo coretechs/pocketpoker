@@ -66,15 +66,14 @@ class Table {
 		this.deck = shuffleDeck(cards);
 
 		//reset player hands and wagers
-		/*let tally = 0;
+		let tally = 0;
 		for(let i = 0; i < this.players.length; i++) {
 			this.players[i].wager = 0;
 			this.players[i].hand = [];
-			this.players[i].allIn = false;
 			tally+=this.players[i].chips;
 		}
-		console.log("player tally:", tally, "this.chips: ", this.chips);
-		*/
+		//console.log("player tally:", tally, "this.chips: ", this.chips);
+		
 	}
 
 	join (player) {
@@ -90,26 +89,28 @@ class Table {
 	}
 
 	leave (name) {
-		let dealer = false;
-		for(let i = 0; i < this.players.length; i++) {
-			let p = this.players[i];
-			if(p.name === name) {
-				console.log("LEAVING: ", p);
-				this.chips += p.chips;
-				this.players.splice(i, 1);
-				if(this.button === i) {
-					log("dealer is leaving, button index: " + this.button);
-					this.button--;
-					dealer = true;
-				}
-				else if(this.button > i) {
-					this.button--;
-				}
-				log(name + " has left the table, player index: " + i + ", remaining players: " + this.players.length);
-				//this.nextRound();
-			}
+		//returns true if dealer
+		let i = this.players.findIndex(p => p.name === name);
+		//this.chips += p.chips;
+		this.players.splice(i, 1);
+		if(this.button === i) {
+			log("dealer is leaving, button index: " + this.button);
+			this.nextRound();
+			return 1;
 		}
-		return dealer;
+		log(name + " has left the table, player index: " + i + ", remaining players: " + this.players.length);
+		return 0;
+	}
+
+	getPlayer (playerId) {
+		return this.players.find(p => p.id === playerId);
+	}
+
+	switchSeats (playerId, playerId2) {
+		let idx1 = this.players.findIndex(p => p.id === playerId),
+			idx2 = this.players.findIndex(p => p.id === playerId2);
+		//destructured swap
+		[this.players[idx1], this.players[idx2]] = [this.players[idx2], this.players[idx1]];
 	}
 
 	nextRound () {
@@ -118,6 +119,29 @@ class Table {
 		this.round++;
 		this.button = (this.button + 1) % this.players.length;
 		//this.blinds();
+	}
+
+
+	validActions (player) {
+		//determine valid actions for current player 
+		let actions = { "fold": true, "check": true, "call": true, "raise": true };
+		if(player.chips <= this.potMin) {
+			actions.check = false;
+			actions.raise = false;
+		}
+		if(player.wager === this.potMin) {
+			actions.call = "false"
+		}
+		if(player.wager <= this.potMin) {
+			actions.check = "false"
+		}
+		return actions;
+	}
+
+	checkEnd () {
+		console.log("checkEnd ------------------ this.folds:", this.folds, "this.allIns:", this.allIns, "players.length:", this.players.length);
+		if((this.folds + this.allIns) === this.players.length) return true;
+		return false;
 	}
 
 	blinds () {
@@ -134,18 +158,19 @@ class Table {
 
 		//console.log("small (chips)/big (chips)", small.name, small.chips, "/", big.name, big.chips);
 
-		if(!small.setWager(this.sb)) {
+		if(small.chips < this.sb) {
 			console.log("asking", small.name, "to leave");
 			this.leave(small.name);
 			return;
 		}
-		if(!big.setWager(this.bb)) {
-			//return small blind!
-			small.chips += this.sb;
+		if(big.chips < this.bb) {
 			console.log("asking", big.name, "to leave");
 			this.leave(big.name);
 			return;
 		}
+
+		small.setWager(this.sb);
+		big.setWager(this.bb);
 		
 		this.pot.push(small.bet(this.round, this.stage));
 		this.pot.push(big.bet(this.round, this.stage));
@@ -163,42 +188,46 @@ class Table {
 		//console.log("-------------------------bets-------------------------");
 		//for(let i = 1; i <= this.players.length; i++) {
 		let i = 1;
-		let betting = true;
+		let potGood = 0;
 
-		while(betting) {
+		while(potGood < this.players.length) {
 			let p = this.players[(this.button+i) % this.players.length];
 			i++;
 
-			//console.log("folds:", this.folds, "allIns:", this.allIns, "players.length:", this.players.length);
+			console.log("folds:", this.folds, "allIns:", this.allIns, "players.length:", this.players.length);
+
+			console.log("potGood: ", potGood);
 
 			if(this.folds === (this.players.length - 1)) {
 				console.log("ONE PLAYER REMAINING", "folds:", this.folds);
-				betting = false;
+				potGood = this.players.length;
 				this.pushWagers();
 				return true;
 			}
 			
 			if((this.folds + this.allIns) === this.players.length) {
 				console.log("ALL INS AND FOLDS", this.allIns, this.folds);
-				betting = false;
+				potGood = this.players.length;
 				this.pushWagers();
 				return true;
 			}
 
 			if(p.hand && p.hand[0] == "Fold") {
 				console.log("skipping ", p.name, " because they [FOLDED]");
+				potGood++;
 				continue;
 			}
 
-			if(p.allIn) {
+			if(p.action == "allin") {
 				console.log("skipping ", p.name, " because they are [ALL IN]");
+				potGood++;
 				continue;
 			}
 
 			if(p.wager === this.potMin) {
-				console.log("betting is now false");
-				betting = false;
-				break;
+				console.log("players wager is equal to potMin (check?)");
+				potGood++;
+				continue;
 			}
 
 			//TESTING
@@ -260,7 +289,7 @@ class Table {
 			numWinners = (this.winner.length ? this.winner[1].length : 0);
 
 		if(numWinners === 0) {
-			console.log("AWERDING", this.winner);
+			console.log("AWARDING", this.winner);
 		}
 		else if(this.stage === 4) {
 			for(let i = 0; i < this.pot.length; i++) {
@@ -359,13 +388,14 @@ class Table {
 }
 
 class Player {
-	constructor (socketid, name) {
-		this.socketid = socketid;
+	constructor (id, name) {
+		this.id = id;
 		this.name = name;
 		this.chips = 1000;
 		this.hand = [];
 		this.wager = 0;	
-		this.allIn = false;
+		this.action = "";
+		//actions: check, fold, call, raise, allin (raise to max, needed?)
 	}
 
 	setWager (amount) {
@@ -380,7 +410,7 @@ class Player {
 		console.log(this.name, "wagers:", this.wager);
 		if(this.chips === 0) {
 			console.log("ALL IN BABY!");
-			this.allIn = true;
+			this.action = "allin";
 		}
 		return true;
 	}
@@ -390,7 +420,7 @@ class Player {
 			console.log(this.name, " pulls back his wager of: ", this.wager);
 			this.chips += this.wager;
 			this.wager = 0;
-			if(this.chips > 0) this.allIn = false;
+			if(this.chips > 0) this.action = "";
 		}
 	}
 

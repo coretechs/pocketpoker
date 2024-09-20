@@ -15,7 +15,8 @@ t.join(p4);
 t.join(p5);
 t.join(p6);
 
-for(let x = 0; x < 100; x++)
+
+for(let x = 0; x < 10000; x++)
 {
 	let winner = false;
 	t.deal();
@@ -30,6 +31,7 @@ for(let x = 0; x < 100; x++)
 	t.payouts();
 	t.nextRound();
 }
+
 console.log("%o",t.players);
 let total = 0;
 for(let i = 0; i < t.pot.length; i++) {

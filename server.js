@@ -13,7 +13,8 @@ const 	compress = require("compression"),
 
 const   VERSION = JSON.parse(fs.readFileSync("package.json")).version,
 		INSTANCE = VERSION + "_" + Date.now(),
-		TABLES = {};
+		TABLES = {},
+		PLAYERS = [];
 
 const 	server = http.createServer(app);
 const 	io = socketio(server, {
@@ -31,7 +32,7 @@ app.use(compress());
 
 app.locals.clientcss = fs.readFileSync(__dirname + "/css/client.css", "utf8");
 app.locals.clientjs = fs.readFileSync(__dirname + "/client/client.js", "utf8");
-app.locals.clientjs = process.env.NODE_ENV !== "DEV" ? uglifyES.minify(app.locals.clientjs).code : app.locals.clientjs;
+//app.locals.clientjs = process.env.NODE_ENV !== "DEV" ? uglifyES.minify(app.locals.clientjs).code : app.locals.clientjs;
 
 app.get("/", (req, res) => {
 	res.sendFile(__dirname + "/html/index.html");
@@ -50,22 +51,24 @@ app.get("/client.js", (req, res, next) => {
 });
 
 io.on("connection", socket => {
-	const p = new poker.Player(socket.id, "");
+	let p = {};
+	let t = {};
 	console.log("new socket connection: " + socket.id);
 	
-	let t = {};
+	socket.on("join", (playerId, playerName, tableName, next) => {
+		if(tableName === "") tableName = "House Table";
 
-	updateUsers();
-	
-	socket.on("join", (playerName, tableName, next) => {
-		if(tableName == "") tableName = "House Table";
-		console.log("socket joining: " + socket.id, playerName, tableName);
-		p.name = playerName;
+		console.log("socket joining: " + socket.id, playerId, playerName, tableName);
+
 		if(TABLES[tableName]) t = TABLES[tableName];
 		else {
 			t = new poker.Table(tableName);
 			TABLES[tableName] = t;
 		}
+
+		p = t.getPlayer(playerId) ? t.getPlayer(playerId) : new poker.Player(playerId, playerName);	
+		addPlayer(socket.id, p);
+
 		if(t.join(p)) {
 			socket.join(t.name)
 			io.to(t.name).emit("player joined", p.name);
@@ -91,7 +94,9 @@ io.on("connection", socket => {
 	socket.on("deal", () => {
 		t.deal();
 		for(let i = 0; i < t.players.length; i++) {
-			io.to(t.players[i].socketid).emit("hand", t.players[i].hand);
+			let socketid = PLAYERS.find(p => p.id === t.players[i].id).socketid;
+			console.log("emitting hand: ", t.players[i].hand, " to socket: ", socketid);
+			io.to(socketid).emit("hand", t.players[i].hand);
 		}
 	});
 
@@ -130,26 +135,34 @@ io.on("connection", socket => {
 	});
 });
 
-function updateUsers () {
-	//global socket list
-	let users = [];
-	for (let [id] of io.of("/").sockets) {
-		users.push(id);
-	}
-	console.log(users.length + " socket(s) connected");
-	console.log(users);
-	io.emit("users", users);
+function addPlayer (socketid, player) {
+	//for (let [id] of io.of("/").sockets) {
+	PLAYERS.push({ "socketid": socketid, "id": player.id, "name" : player.name });
+//	}
+	console.log(PLAYERS.length + " player(s) connected");
+	console.log(PLAYERS);
+	io.emit("player list", PLAYERS);
+}
+
+function removePlayer (playerId) {
+	let idx = PLAYERS.findIndex(p => p.id === playerId);
+ 	PLAYERS.splice(idx, 1);
+	io.emit("player list", PLAYERS);
 }
 
 function leave (player, table, socket) {
+	console.log("[server.js] leaving: ", player.name);
 	if(table.leave(player.name)) {
+	// if player is dealer ^^^
 		if(table.players.length) {
+	//		console.log("sending end hand", table.players);
 			io.to(table.name).emit("end hand", table.players[table.button].name);
 		}
 		else delete TABLES[table.name];
 	}
 	socket.leave(table.name);
 	io.to(table.name).emit("player left", player.name);
+	removePlayer(player.id);
 }
 
 function init (next) {

@@ -1,4 +1,9 @@
+const URL = location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "");
+const socket = io(URL, { autoConnect: true });
+const crypto = window.crypto || window.msCrypto;
+
 const APP = {
+	playerId: "",
 	playerName: "",
 	tableName: "",
 	table: {
@@ -19,11 +24,9 @@ const DOM = {
 	dealerButtons: document.getElementById("dealerButtons"),
 	playerButtons: document.getElementById("playerButtons"),
 	gameCards: document.getElementById("gameCards"),
-	playerCards: document.getElementById("playerCards")
+	playerCards: document.getElementById("playerCards"),
+	playerList: document.getElementById("playerList")
 };
-
-const URL = location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "");
-const socket = io(URL, { autoConnect: true });
 
 DOM.join.onclick = () => {
 	APP.playerName = DOM.playerInput.value;
@@ -63,6 +66,13 @@ function getFormattedUTCTimestamp () {
     return d.getUTCFullYear().toString().slice(2) + "-" + pad(d.getUTCMonth() + 1,2) + "-" + pad(d.getUTCDate(), 2) + " " + pad(d.getUTCHours(), 2) + ":" + pad(d.getUTCMinutes(), 2) + ":" + pad(d.getUTCSeconds(), 2);
 }
 
+function init () {
+	APP.playerId = sessionStorage.getItem("playerId") ? sessionStorage.getItem("playerId") : crypto.randomUUID();
+	//getCookie("playerId").length ? getCookie("playerId") : crypto.randomUUID();
+	//setCookie("playerId", APP.playerId, 1);
+	sessionStorage.setItem("playerId", APP.playerId);
+}
+
 function showInputButtons (bool) {
 	DOM.playerInput.hidden = !bool;
 	DOM.join.hidden = !bool;
@@ -70,12 +80,12 @@ function showInputButtons (bool) {
 }
 
 function reset () {
-	APP.playerName = "";
+	//APP.playerName = "";
 	APP.tableName = "";
 	APP.showCards = false;
 	DOM.playerName.innerHTML = "";
 	DOM.tableName.innerHTML = "";
-	DOM.playerInput.value = "";
+	//DOM.playerInput.value = "";
 	
 	APP.table.cards = [];
 	APP.table.hand = [];
@@ -86,7 +96,7 @@ function reset () {
 	DOM.gameCards.innerHTML = "";
 	DOM.playerCards.innerHTML = "";
 	showInputButtons(true);
-	DOM.playerInput.focus();
+	//DOM.playerInput.focus();
 }
 
 function endHand (dealerName) {
@@ -102,7 +112,8 @@ function endHand (dealerName) {
 
 function joinTable () {
 	if(APP.playerName) {
-		socket.emit("join", APP.playerName, APP.tableName, (tableName, dealerName) => {
+		console.log(APP.playerId, APP.playerName);
+		socket.emit("join", APP.playerId, APP.playerName, APP.tableName, (tableName, dealerName) => {
 			console.log("joined table, dealer is: " + dealerName + ", table is: " + tableName);
 			APP.tableName = tableName;
 			DOM.tableName.innerHTML = APP.tableName;
@@ -132,6 +143,7 @@ function renderCards (cards) {
 }
 
 function renderHand (hand) {
+	console.log(hand);
 	DOM.playerCards.innerHTML = "";
 	if(hand) {
 		let h1 = document.createElement("img"),
@@ -142,6 +154,20 @@ function renderHand (hand) {
 		h2.src = "images/" + (APP.showCards ? hand[1] : "b1fv") + ".png";
 		DOM.playerCards.appendChild(h1);
 		DOM.playerCards.appendChild(h2);
+	}
+}
+
+function renderPlayerList (players) {
+	DOM.playerList.innerHTML = "";
+	if(players) {
+		for(let i = 0; i < players.length; i++) {
+			let r = document.createElement("div");
+			let p = document.createElement("p");
+			p.innerHTML = players[i].name;
+			r.classList.add("row");
+			r.appendChild(p);
+			DOM.playerList.appendChild(r);
+		}
 	}
 }
 
@@ -191,8 +217,9 @@ function message (message) {
 
 socket.on("message", message);
 
-socket.on("users", users => {
-	console.log("USERS: ", users);
+socket.on("player list", players => {
+	console.log("player list: ", players);
+	renderPlayerList(players);
 });
 
 socket.on("player joined", player => {
@@ -230,5 +257,7 @@ socket.on("disconnect", () => {
 socket.onAny((event, ...args) => {
  	console.log(event, args);
 });
+
+init();
 
 DOM.playerInput.focus();
