@@ -92,13 +92,15 @@ class Table {
 		//returns true if dealer
 		let i = this.players.findIndex(p => p.name === name);
 		//this.chips += p.chips;
-		this.players.splice(i, 1);
-		if(this.button === i) {
-			log("dealer is leaving, button index: " + this.button);
-			this.nextRound();
-			return 1;
+		if(i >== 0) {
+			this.players.splice(i, 1);
+			if(this.button === i) {
+				log("dealer is leaving, button index: " + this.button);
+				this.nextRound();
+				return 1;
+			}
+			log(name + " has left the table, player index: " + i + ", remaining players: " + this.players.length);
 		}
-		log(name + " has left the table, player index: " + i + ", remaining players: " + this.players.length);
 		return 0;
 	}
 
