@@ -87,7 +87,7 @@ io.on("connection", socket => {
 			playerId2 = PLAYERS.find(p => p.name = playerName2).id;
 		if(playerId1 && playerId2) t.switchSeats(playerId1, playerId2);
 		next();
-	}
+	});
 
 	socket.on("disconnect", () => {
 		console.log("socket disconnected: " + socket.id);
