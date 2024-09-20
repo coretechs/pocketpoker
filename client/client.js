@@ -112,7 +112,7 @@ function endHand (dealerName) {
 
 function joinTable () {
 	if(APP.playerName) {
-		console.log(APP.playerId, APP.playerName);
+		//console.log(APP.playerId, APP.playerName);
 		socket.emit("join", APP.playerId, APP.playerName, APP.tableName, (tableName, dealerName) => {
 			console.log("joined table, dealer is: " + dealerName + ", table is: " + tableName);
 			APP.tableName = tableName;
@@ -143,7 +143,6 @@ function renderCards (cards) {
 }
 
 function renderHand (hand) {
-	console.log(hand);
 	DOM.playerCards.innerHTML = "";
 	if(hand) {
 		let h1 = document.createElement("img"),
@@ -255,7 +254,7 @@ socket.on("disconnect", () => {
 });
 
 socket.onAny((event, ...args) => {
- 	console.log(event, args);
+ 	//console.log(event, args);
 });
 
 init();
