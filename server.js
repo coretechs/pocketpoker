@@ -14,7 +14,7 @@ const 	compress = require("compression"),
 const   VERSION = JSON.parse(fs.readFileSync("package.json")).version,
 		INSTANCE = VERSION + "_" + Date.now(),
 		TABLES = {},
-		PLAYERS = [];
+		SESSIONS = [];
 
 const 	server = http.createServer(app);
 const 	io = socketio(server, {
@@ -67,26 +67,30 @@ io.on("connection", socket => {
 		}
 
 		p = t.getPlayer(playerId) ? t.getPlayer(playerId) : new poker.Player(playerId, playerName);	
-		addPlayer(socket.id, p);
+		addSession(socket.id, p);
 
 		if(t.join(p)) {
 			socket.join(t.name)
 			io.to(t.name).emit("player joined", p.name);
 			next(tableName, t.players[t.button].name);
 		}
+		console.log("[server.js] table players: ", t.players);
+		updatePlayerList(t.players);
 	});
 
 	socket.on("leave", next => {
 		console.log("socket leaving: " + socket.id);
 		if(t.players && t.players.length) leave(p, t, socket);
+		console.log("[server.js] table players: ", t.players);
+		updatePlayerList(t.players);
 		next();
 	});
 
-	socket.on("switch seat", (playerName1, playerName2, next) => {
-		let playerId1 = PLAYERS.find(p => p.name = playerName1).id,
-			playerId2 = PLAYERS.find(p => p.name = playerName2).id;
+	socket.on("switch seat", (playerName1, playerName2) => {
+		let playerId1 = SESSIONS.find(p => p.name === playerName1).id,
+			playerId2 = SESSIONS.find(p => p.name === playerName2).id;
 		if(playerId1 && playerId2) t.switchSeats(playerId1, playerId2);
-		next();
+		updatePlayerList(t.players);
 	});
 
 	socket.on("disconnect", () => {
@@ -101,7 +105,7 @@ io.on("connection", socket => {
 	socket.on("deal", () => {
 		t.deal();
 		for(let i = 0; i < t.players.length; i++) {
-			let socketid = PLAYERS.find(p => p.id === t.players[i].id).socketid;
+			let socketid = SESSIONS.find(p => p.id === t.players[i].id).socketid;
 			console.log("emitting hand: ", t.players[i].hand, " to socket: ", socketid);
 			io.to(socketid).emit("hand", t.players[i].hand);
 		}
@@ -142,19 +146,22 @@ io.on("connection", socket => {
 	});
 });
 
-function addPlayer (socketid, player) {
-	//for (let [id] of io.of("/").sockets) {
-	PLAYERS.push({ "socketid": socketid, "id": player.id, "name" : player.name });
-//	}
-	console.log(PLAYERS.length + " player(s) connected");
-	console.log(PLAYERS);
-	io.emit("player list", PLAYERS);
+function updatePlayerList (players) {
+	let playerList = players.map(p => ({ "name" : p.name}));
+	io.emit("player list", playerList);
 }
 
-function removePlayer (playerId) {
-	let idx = PLAYERS.findIndex(p => p.id === playerId);
- 	PLAYERS.splice(idx, 1);
-	io.emit("player list", PLAYERS);
+function addSession (socketid, player) {
+	//for (let [id] of io.of("/").sockets) {}
+	SESSIONS.push({ "socketid": socketid, "id": player.id, "name" : player.name });
+	console.log(SESSIONS.length + " player(s) connected");
+	console.log("[server.js] SESSIONS: ", SESSIONS);
+}
+
+function removeSession (playerId) {
+	let idx = SESSIONS.findIndex(p => p.id === playerId);
+ 	SESSIONS.splice(idx, 1);
+ 	console.log("[server.js] SESSIONS: ", SESSIONS);
 }
 
 function leave (player, table, socket) {
@@ -169,7 +176,7 @@ function leave (player, table, socket) {
 	}
 	socket.leave(table.name);
 	io.to(table.name).emit("player left", player.name);
-	removePlayer(player.id);
+	removeSession(player.id);
 }
 
 function init (next) {

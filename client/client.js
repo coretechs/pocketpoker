@@ -162,7 +162,17 @@ function renderPlayerList (players) {
 		for(let i = 0; i < players.length; i++) {
 			let r = document.createElement("div");
 			let p = document.createElement("p");
+			let s = document.createElement("span");
+			let nextSeat = (i === 0) ? players.length - 1 : i - 1;
+
+			s.innerHTML = " &#9650;"
+			s.onclick = () => {
+				console.log(players[i].name, players[nextSeat].name);
+				socket.emit("switch seat", players[i].name, players[nextSeat].name);
+			};
 			p.innerHTML = players[i].name;
+			p.appendChild(s);
+
 			r.classList.add("row");
 			r.appendChild(p);
 			DOM.playerList.appendChild(r);
@@ -170,13 +180,13 @@ function renderPlayerList (players) {
 	}
 }
 
-function createDealerButton (name, cb) {
+function createDealerButton (name, next) {
 	let b = document.createElement("button");
 	b.innerHTML = name.toUpperCase();
 	b.onclick = () => {
 		socket.emit(name, () => {});
 		DOM.dealerButtons.removeChild(b);
-		cb();
+		next();
 	};
 	DOM.dealerButtons.appendChild(b);
 }
@@ -217,7 +227,6 @@ function message (message) {
 socket.on("message", message);
 
 socket.on("player list", players => {
-	console.log("player list: ", players);
 	renderPlayerList(players);
 });
 

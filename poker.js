@@ -108,11 +108,15 @@ class Table {
 		return this.players.find(p => p.id === playerId);
 	}
 
-	switchSeats (playerId, playerId2) {
-		let idx1 = this.players.findIndex(p => p.id === playerId),
+	switchSeats (playerId1, playerId2) {
+		let idx1 = this.players.findIndex(p => p.id === playerId1),
 			idx2 = this.players.findIndex(p => p.id === playerId2);
-		//destructured swap
-		[this.players[idx1], this.players[idx2]] = [this.players[idx2], this.players[idx1]];
+		console.log(playerId1, playerId2);
+		console.log("pre swap:", this.players[idx1], this.players[idx2]);
+		let temp = this.players[idx1];
+		this.players[idx1] = this.players[idx2];
+		this.players[idx2] = temp;
+		console.log("pre swap:", this.players[idx1], this.players[idx2]);
 	}
 
 	nextRound () {
