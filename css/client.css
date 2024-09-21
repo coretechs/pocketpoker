@@ -79,10 +79,12 @@ button {
 }
 
 #playerList {
-  background-color: #555555;
+  background-color: #222222;
   border-radius: 4px;
   width: 100%;
   display: block;
+  padding: 0.2rem;
+  margin-left: 0.1rem;
 }
 
 #gameCards, #playerCards {
@@ -122,6 +124,12 @@ button {
   display: flex;
   align-items: center;
   height: 100%;
+}
+
+.hover { 
+  cursor: pointer;
+  color: greenyellow; 
+  font-weight: bold; 
 }
 
 /* Fade-in animation for images */

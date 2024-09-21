@@ -80,7 +80,9 @@ io.on("connection", socket => {
 
 	socket.on("leave", next => {
 		console.log("socket leaving: " + socket.id);
-		if(t.players && t.players.length) leave(p, t, socket);
+		if(t.players && t.players.length) {
+			leave(p, t, socket);
+		}
 		console.log("[server.js] table players: ", t.players);
 		updatePlayerList(t.players);
 		next();
@@ -90,6 +92,7 @@ io.on("connection", socket => {
 		let playerId1 = SESSIONS.find(p => p.name === playerName1).id,
 			playerId2 = SESSIONS.find(p => p.name === playerName2).id;
 		if(playerId1 && playerId2) t.switchSeats(playerId1, playerId2);
+		io.to(t.name).emit("message", playerName1 + " switched seats with " + playerName2);	
 		updatePlayerList(t.players);
 	});
 
@@ -105,9 +108,11 @@ io.on("connection", socket => {
 	socket.on("deal", () => {
 		t.deal();
 		for(let i = 0; i < t.players.length; i++) {
-			let socketid = SESSIONS.find(p => p.id === t.players[i].id).socketid;
-			console.log("emitting hand: ", t.players[i].hand, " to socket: ", socketid);
-			io.to(socketid).emit("hand", t.players[i].hand);
+			let socketid = SESSIONS.find(p => p.id === t.players[i].id);
+			if(socketid) {
+				console.log("emitting hand: ", t.players[i].hand, " to socket: ", socketid);
+				io.to(socketid).emit("hand", t.players[i].hand);	
+			}
 		}
 	});
 

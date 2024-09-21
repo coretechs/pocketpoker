@@ -160,12 +160,14 @@ function renderPlayerList (players) {
 	DOM.playerList.innerHTML = "";
 	if(players) {
 		for(let i = 0; i < players.length; i++) {
-			let r = document.createElement("div");
-			let p = document.createElement("p");
-			let s = document.createElement("span");
-			let nextSeat = (i === 0) ? players.length - 1 : i - 1;
+			let r = document.createElement("div"),
+				p = document.createElement("p"),
+				s = document.createElement("span"),
+				nextSeat = (i === 0) ? players.length - 1 : i - 1;
 
-			s.innerHTML = " &#9650;"
+			s.innerHTML = " &#x1F781;"
+			s.onmouseover = () => s.classList.add("hover");
+			s.onmouseout = () => s.classList.remove("hover");
 			s.onclick = () => {
 				console.log(players[i].name, players[nextSeat].name);
 				socket.emit("switch seat", players[i].name, players[nextSeat].name);
