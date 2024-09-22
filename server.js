@@ -108,10 +108,12 @@ io.on("connection", socket => {
 	socket.on("deal", () => {
 		t.deal();
 		for(let i = 0; i < t.players.length; i++) {
-			let socketid = SESSIONS.find(p => p.id === t.players[i].id);
+			let p = SESSIONS.find(p => p.id === t.players[i].id),
+				socketid = p.socketid ? p.socketid : false;
+
 			if(socketid) {
-				console.log("emitting hand: ", t.players[i].hand, " to socket: ", socketid);
-				io.to(socketid).emit("hand", t.players[i].hand);	
+				//console.log("emitting hand: ", t.players[i].hand, " to socket: ", socketid);
+				io.to(socketid).emit("hand", t.players[i].hand);
 			}
 		}
 	});
