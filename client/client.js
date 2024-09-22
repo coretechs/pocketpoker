@@ -165,11 +165,13 @@ function renderPlayerList (players) {
 				s = document.createElement("span"),
 				nextSeat = (i === 0) ? players.length - 1 : i - 1;
 
-			s.innerHTML = " &#x1F781;"
+			s.innerHTML = " &#9650;"
 			s.onmouseover = () => s.classList.add("hover");
 			s.onmouseout = () => s.classList.remove("hover");
+			s.setAttribute("id", "seatArrow");
+
 			s.onclick = () => {
-				console.log(players[i].name, players[nextSeat].name);
+				//console.log(players[i].name, players[nextSeat].name);
 				socket.emit("switch seat", players[i].name, players[nextSeat].name);
 			};
 			p.innerHTML = players[i].name;
