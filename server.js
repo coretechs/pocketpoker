@@ -75,7 +75,7 @@ io.on("connection", socket => {
 			next(tableName, t.players[t.button].name);
 		}
 		console.log("[server.js] table players: ", t.players);
-		updatePlayerList(t.players);
+		updatePlayerList(t);
 	});
 
 	socket.on("leave", next => {
@@ -94,7 +94,7 @@ io.on("connection", socket => {
 			playerId2 = SESSIONS.find(p => p.name === playerName2).id;
 		if(playerId1 && playerId2) t.switchSeats(playerId1, playerId2);
 		io.to(t.name).emit("message", playerName1 + " switched seats with " + playerName2);	
-		updatePlayerList(t.players);
+		updatePlayerList(t);
 	});
 
 	socket.on("deal", () => {
@@ -133,6 +133,7 @@ io.on("connection", socket => {
 	socket.on("end hand", () => {
 		t.nextRound();
 		io.to(t.name).emit("end hand", t.players[t.button].name);
+		updatePlayerList(t);
 	});
 
 	socket.on("fold", () => {
@@ -149,8 +150,9 @@ io.on("connection", socket => {
 	});
 });
 
-function updatePlayerList (players) {
-	let playerList = players.map(p => ({ "name" : p.name}));
+function updatePlayerList (table) {
+	let players = table.players,
+		playerList = players.map((p, idx) => ({ "name" : p.name, "dealer" : (idx === table.button) ? true : false }));
 	io.emit("player list", playerList);
 }
 
@@ -188,7 +190,7 @@ function leave (player, table, socket) {
 	if(idx2 >= 0) removeSession(player.id);
 	
 	console.log("[server.js] table players: ", table.players);
-	updatePlayerList(table.players);
+	updatePlayerList(table);
 }
 
 function init (next) {

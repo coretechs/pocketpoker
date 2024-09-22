@@ -112,9 +112,8 @@ function endHand (dealerName) {
 
 function joinTable () {
 	if(APP.playerName) {
-		//console.log(APP.playerId, APP.playerName);
 		socket.emit("join", APP.playerId, APP.playerName, APP.tableName, (tableName, dealerName) => {
-			console.log("joined table, dealer is: " + dealerName + ", table is: " + tableName);
+			//console.log("joined table, dealer is: " + dealerName + ", table is: " + tableName);
 			APP.tableName = tableName;
 			DOM.tableName.innerHTML = APP.tableName;
 			DOM.playerName.innerHTML = APP.playerName;
@@ -126,7 +125,6 @@ function joinTable () {
 
 function leaveTable () {
 	socket.emit("leave", () => {
-		console.log("leaving table");
 		reset();
 	});
 }
@@ -165,18 +163,27 @@ function renderPlayerList (players) {
 				s = document.createElement("span"),
 				nextSeat = (i === 0) ? players.length - 1 : i - 1;
 
+		
+
 			s.innerHTML = " &#9650;"
 			s.onmouseover = () => s.classList.add("hover");
 			s.onmouseout = () => s.classList.remove("hover");
 			s.setAttribute("id", "seatArrow");
-
 			s.onclick = () => {
 				//console.log(players[i].name, players[nextSeat].name);
 				socket.emit("switch seat", players[i].name, players[nextSeat].name);
 			};
+
 			p.innerHTML = players[i].name;
 			p.appendChild(s);
 
+			if(players[i].dealer) {
+				let d = document.createElement("span");
+				d.innerHTML = " D";
+				d.setAttribute("id", "dealerFlag")
+				p.appendChild(d);
+			}
+			
 			r.classList.add("row");
 			r.appendChild(p);
 			DOM.playerList.appendChild(r);
@@ -254,7 +261,6 @@ socket.on("cards", cards => {
 });
 
 socket.on("winner", winner => {
-	console.log(winner);
 	message(winner[2] + ((winner[1].length > 1 && winner[0][0] !== "folding hands") ? " each win with " : " wins with ") + winner[0][0]);
 });
 
