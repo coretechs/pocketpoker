@@ -80,12 +80,13 @@ io.on("connection", socket => {
 
 	socket.on("leave", next => {
 		console.log("socket leaving: " + socket.id);
-		if(t.players && t.players.length) {
-			leave(p, t, socket);
-		}
-		console.log("[server.js] table players: ", t.players);
-		updatePlayerList(t.players);
+		if(t.players && t.players.length) leave(p, t, socket);
 		next();
+	});
+
+	socket.on("disconnect", () => {
+		console.log("socket disconnected: " + socket.id);
+		if(t.players && t.players.length) leave(p, t, socket);
 	});
 
 	socket.on("switch seat", (playerName1, playerName2) => {
@@ -94,15 +95,6 @@ io.on("connection", socket => {
 		if(playerId1 && playerId2) t.switchSeats(playerId1, playerId2);
 		io.to(t.name).emit("message", playerName1 + " switched seats with " + playerName2);	
 		updatePlayerList(t.players);
-	});
-
-	socket.on("disconnect", () => {
-		console.log("socket disconnected: " + socket.id);
-		if(t.players && t.players.length) leave(p, t, socket);
-	});
-
-	socket.on("error", error => {
-		console.log("socket error: " + socket.id + ": " + error);
 	});
 
 	socket.on("deal", () => {
@@ -148,6 +140,10 @@ io.on("connection", socket => {
 		p.fold();
 	});
 
+	socket.on("error", error => {
+		console.log("socket error: " + socket.id + ": " + error);
+	});
+
 	socket.onAny((event, ...args) => {
 		console.log(event, args);
 	});
@@ -173,17 +169,26 @@ function removeSession (playerId) {
 
 function leave (player, table, socket) {
 	console.log("[server.js] leaving: ", player.name);
-	if(table.leave(player.name)) {
-	// if player is dealer ^^^
-		if(table.players.length) {
-	//		console.log("sending end hand", table.players);
-			io.to(table.name).emit("end hand", table.players[table.button].name);
+	let idx = table.players.findIndex(p => p.id === player.id),
+		idx2 = SESSIONS.findIndex(s => s.id === player.id);
+
+	if(idx >= 0) {
+		if(table.leave(player.name)) {
+		// if player is dealer ^^^
+			if(table.players.length) {
+		//		console.log("sending end hand", table.players);
+				io.to(table.name).emit("end hand", table.players[table.button].name);
+			}
+			else delete TABLES[table.name];
 		}
-		else delete TABLES[table.name];
+		socket.leave(table.name);
+		io.to(table.name).emit("player left", player.name);
 	}
-	socket.leave(table.name);
-	io.to(table.name).emit("player left", player.name);
-	removeSession(player.id);
+
+	if(idx2 >= 0) removeSession(player.id);
+	
+	console.log("[server.js] table players: ", table.players);
+	updatePlayerList(table.players);
 }
 
 function init (next) {
