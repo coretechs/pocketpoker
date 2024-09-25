@@ -114,6 +114,8 @@ class Table {
 			temp = this.players[idx1];
 		this.players[idx1] = this.players[idx2];
 		this.players[idx2] = temp;
+		if(this.button === idx1) this.button = idx2;
+		else if(this.button === idx2) this.button = idx1;
 	}
 
 	nextRound () {
